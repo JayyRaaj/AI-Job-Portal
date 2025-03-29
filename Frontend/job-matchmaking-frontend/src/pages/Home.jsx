@@ -75,7 +75,7 @@ function Home() {
     
       
       {/* Hero Content */}
-      <div className="container mx-auto px-6 pt-12 pb-24 md:pt-20 md:pb-32 z-10 relative">
+      <div className="w-full px-6 pt-12 pb-24 md:pt-20 md:pb-32 z-10 relative">
         <div className="flex flex-col md:flex-row items-center">
           <div className="w-full md:w-1/2 md:pr-12 text-center md:text-left">
             <div className="inline-block px-4 py-1 mb-6 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/80 text-sm">
@@ -142,7 +142,7 @@ function Home() {
 
       {/* Featured Jobs Section */}
       <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
+        <div className="w-full px-4">
           <div className="flex justify-between items-center mb-10">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
               Featured Jobs
@@ -217,7 +217,7 @@ function Home() {
 
       {/* Platform Stats Section */}
       <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
+        <div className="w-full px-4">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-12">
             Our Platform at a Glance
           </h2>
@@ -268,7 +268,7 @@ function Home() {
 
       {/* Categories Section */}
       <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
+        <div className="w-full px-4">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-12">
             Browse Jobs by Category
           </h2>
@@ -299,7 +299,7 @@ function Home() {
 
       {/* CTA Section */}
       <section className="py-16 bg-gradient-to-r from-indigo-600 to-blue-500 text-white">
-        <div className="container mx-auto px-4 text-center">
+        <div className="w-full px-4 text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-6">
             Ready to Take the Next Step in Your Career?
           </h2>
