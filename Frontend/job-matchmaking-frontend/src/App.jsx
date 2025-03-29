@@ -1,16 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import JobseekerDashboard from "./pages/JobseekerDashboard";
+import EmployerDashboard from "./pages/EmployerDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import Profile from "./pages/Profile";
+import ResumeUpload from "./pages/ResumeUpload";
+import JobRecommendations from "./pages/JobRecommendations";
+import CourseRecommendations from "./pages/CourseRecommendations";
+import ApplicationTracking from "./pages/ApplicationTracking";
+import InterviewReminders from "./pages/InterviewReminders";
+import MarketInsights from "./pages/MarketInsights";
+import JobManagement from "./pages/JobManagement";
+import CandidateScreening from "./pages/CandidateScreening";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      
-    </>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard/jobseeker" element={<JobseekerDashboard />} />
+        <Route path="/dashboard/employer" element={<EmployerDashboard />} />
+        <Route path="/dashboard/admin" element={<AdminDashboard />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/resume-upload" element={<ResumeUpload />} />
+        <Route path="/job-recommendations" element={<JobRecommendations />} />
+        <Route path="/course-recommendations" element={<CourseRecommendations />} />
+        <Route path="/application-tracking" element={<ApplicationTracking />} />
+        <Route path="/interview-reminders" element={<InterviewReminders />} />
+        <Route path="/market-insights" element={<MarketInsights />} />
+        <Route path="/job-management" element={<JobManagement />} />
+        <Route path="/candidate-screening" element={<CandidateScreening />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
