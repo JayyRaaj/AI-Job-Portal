@@ -1,5 +1,6 @@
 import MainLayout from "../layouts/MainLayout";
 import { useState } from "react";
+import { UploadCloud, FileCheck } from "lucide-react";
 
 function ResumeUpload() {
   const [fileName, setFileName] = useState("");
@@ -11,17 +12,21 @@ function ResumeUpload() {
 
   return (
     <MainLayout>
-      <h1 className="text-3xl font-bold mb-6">Upload Resume</h1>
+      <div className="mb-10">
+        <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+          📄 Upload Resume
+        </h1>
+        <p className="text-lg text-gray-500 mt-1">Showcase your experience by uploading your latest resume.</p>
+      </div>
 
-      <div className="bg-white p-6 rounded-2xl shadow-card text-center">
+      <div className="bg-white p-10 rounded-3xl border border-gray-100 shadow-lg text-center max-w-xl mx-auto">
         <label
           htmlFor="resume"
-          className="block border-2 border-dashed border-primary rounded-xl p-12 cursor-pointer hover:bg-primary/10"
+          className="block border-2 border-dashed border-indigo-500 rounded-2xl px-6 py-16 cursor-pointer hover:bg-indigo-50 transition"
         >
-          <p className="text-lg text-gray-600 mb-2">
-            Drag & drop your resume here, or click to browse
-          </p>
-          <p className="text-sm text-gray-400">PDF, DOCX only — Max 5MB</p>
+          <UploadCloud className="mx-auto w-10 h-10 text-indigo-500 mb-4" />
+          <p className="text-lg text-gray-700 mb-1 font-medium">Drag & drop your resume here</p>
+          <p className="text-sm text-gray-400">or click to browse — PDF, DOCX only (Max 5MB)</p>
         </label>
         <input
           type="file"
@@ -32,12 +37,13 @@ function ResumeUpload() {
         />
 
         {fileName && (
-          <div className="mt-4 text-green-600 font-medium">
+          <div className="mt-6 flex items-center justify-center gap-2 text-green-600 font-medium">
+            <FileCheck className="w-5 h-5" />
             Uploaded: {fileName}
           </div>
         )}
 
-        <button className="mt-6 bg-primary text-white px-6 py-2 rounded-xl">
+        <button className="mt-8 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl text-sm font-semibold transition">
           Save Resume
         </button>
       </div>

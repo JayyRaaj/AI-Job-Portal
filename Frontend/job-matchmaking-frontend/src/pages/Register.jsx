@@ -10,80 +10,89 @@ function Register() {
 
   return (
     <MainLayout>
-      <div className="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-card">
-        <h2 className="text-2xl font-bold mb-6 text-center">Create Your Account</h2>
+      <div className="max-w-lg mx-auto mt-16 bg-white shadow-xl rounded-2xl overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-6 px-8 text-center">
+          <h2 className="text-3xl font-semibold">Create Your Account</h2>
+          <p className="text-sm mt-1">Join the right side of talent</p>
+        </div>
 
-        {step === 1 && (
-          <div className="space-y-4">
-            <label className="block font-medium">Select Account Type</label>
-            <div className="flex gap-4">
+        <div className="px-8 py-10">
+          {step === 1 && (
+            <div className="space-y-6">
+              <div className="text-lg font-medium text-gray-800">I am a...</div>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  onClick={() => setUserType("jobseeker")}
+                  className={`p-4 rounded-xl border transition-all ${
+                    userType === "jobseeker"
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "bg-gray-50 text-gray-700 hover:border-blue-400"
+                  }`}
+                >
+                  Jobseeker
+                </button>
+                <button
+                  onClick={() => setUserType("employer")}
+                  className={`p-4 rounded-xl border transition-all ${
+                    userType === "employer"
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "bg-gray-50 text-gray-700 hover:border-blue-400"
+                  }`}
+                >
+                  Employer
+                </button>
+              </div>
               <button
-                onClick={() => setUserType("jobseeker")}
-                className={`flex-1 p-3 rounded-xl border ${
-                  userType === "jobseeker" ? "bg-primary text-white" : "bg-gray-100"
+                onClick={handleNext}
+                disabled={!userType}
+                className={`w-full py-3 rounded-xl text-white font-medium transition ${
+                  userType ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-300 cursor-not-allowed"
                 }`}
               >
-                Jobseeker
-              </button>
-              <button
-                onClick={() => setUserType("employer")}
-                className={`flex-1 p-3 rounded-xl border ${
-                  userType === "employer" ? "bg-primary text-white" : "bg-gray-100"
-                }`}
-              >
-                Employer
+                Continue
               </button>
             </div>
-            <button
-              onClick={handleNext}
-              disabled={!userType}
-              className="w-full mt-6 bg-primary text-white py-2 rounded-xl"
-            >
-              Next
-            </button>
-          </div>
-        )}
+          )}
 
-        {step === 2 && (
-          <form className="space-y-4">
-            <input
-              type="text"
-              placeholder="Full Name"
-              className="w-full p-3 border rounded-xl"
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              className="w-full p-3 border rounded-xl"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full p-3 border rounded-xl"
-            />
-            <div className="flex items-center gap-2">
-              <input type="checkbox" className="w-4 h-4" />
-              <span className="text-sm text-gray-600">
-                I agree to the Terms & Privacy Policy
-              </span>
-            </div>
-            <div className="flex justify-between mt-6">
-              <button
-                onClick={handleBack}
-                type="button"
-                className="text-sm text-primary"
-              >
-                Back
-              </button>
-              <button
-                type="submit"
-                className="bg-primary text-white px-6 py-2 rounded-xl"
-              >
-                Register
-              </button>
-            </div>
-          </form>
-        )}
+          {step === 2 && (
+            <form className="space-y-5">
+              <input
+                type="text"
+                placeholder="Full Name"
+                className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <input type="checkbox" className="w-4 h-4" />
+                I agree to the <a href="#" className="text-blue-600 underline">Terms</a> & <a href="#" className="text-blue-600 underline">Privacy</a>
+              </div>
+              <div className="flex justify-between items-center pt-4">
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="text-blue-600 hover:underline"
+                >
+                  Back
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition"
+                >
+                  Register
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
       </div>
     </MainLayout>
   );
