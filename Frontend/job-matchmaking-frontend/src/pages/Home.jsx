@@ -15,7 +15,7 @@ function Home() {
       type: "Full-time",
       tags: ["Design", "UI/UX", "Figma"],
       posted: "2 days ago",
-      logo: "/api/placeholder/48/48"
+      logo: "/assets/images/techVision.png"
     },
     {
       id: 2,
@@ -26,7 +26,7 @@ function Home() {
       type: "Full-time",
       tags: ["React", "Node.js", "MongoDB"],
       posted: "3 days ago",
-      logo: "/api/placeholder/48/48"
+      logo: "/assets/images/innovaTech.png"
     },
     {
       id: 3,
@@ -37,7 +37,7 @@ function Home() {
       type: "Full-time",
       tags: ["Digital Marketing", "SEO", "Content"],
       posted: "1 day ago",
-      logo: "/api/placeholder/48/48"
+      logo: "/assets/images/growthBoost.png"
     }
   ];
 
