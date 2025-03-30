@@ -20,7 +20,7 @@ function Register() {
           {step === 1 && (
             <div className="space-y-6">
               <div className="text-lg font-medium text-gray-800">I am a...</div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <button
                   onClick={() => setUserType("jobseeker")}
                   className={`p-4 rounded-xl border transition-all ${
@@ -40,6 +40,16 @@ function Register() {
                   }`}
                 >
                   Employer
+                </button>
+                <button
+                  onClick={() => setUserType("admin")}
+                  className={`p-4 rounded-xl border transition-all ${
+                    userType === "admin"
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "bg-gray-50 text-gray-700 hover:border-blue-400"
+                  }`}
+                >
+                  Admin
                 </button>
               </div>
               <button
