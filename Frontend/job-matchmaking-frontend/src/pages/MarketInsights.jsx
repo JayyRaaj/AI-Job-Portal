@@ -53,17 +53,17 @@ function MarketInsights() {
               <div className="space-y-4">
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
-                  <span className="font-medium text-gray-700">Bengaluru</span>
+                  <span className="font-medium text-gray-700">Dallas</span>
                   <div className="ml-auto bg-emerald-100 text-emerald-700 text-xs font-medium px-2 py-1 rounded-full">Top Hiring</div>
                 </div>
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
-                  <span className="font-medium text-gray-700">Hyderabad</span>
+                  <span className="font-medium text-gray-700">Chicago</span>
                   <div className="ml-auto bg-emerald-100 text-emerald-700 text-xs font-medium px-2 py-1 rounded-full">High Growth</div>
                 </div>
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
-                  <span className="font-medium text-gray-700">Pune</span>
+                  <span className="font-medium text-gray-700">Phoenix</span>
                   <div className="ml-auto bg-emerald-100 text-emerald-700 text-xs font-medium px-2 py-1 rounded-full">Rising</div>
                 </div>
               </div>

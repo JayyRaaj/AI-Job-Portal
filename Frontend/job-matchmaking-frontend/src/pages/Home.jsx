@@ -78,16 +78,15 @@ function Home() {
       <div className="w-full px-6 pt-12 pb-24 md:pt-20 md:pb-32 z-10 relative">
         <div className="flex flex-col md:flex-row items-center">
           <div className="w-full md:w-1/2 md:pr-12 text-center md:text-left">
-            <div className="inline-block px-4 py-1 mb-6 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/80 text-sm">
-              Launch Your Tech Career ✨
-            </div>
+            
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-amber-200">
-              From Campus to Corporate in <span className="text-amber-400">180 Days</span>
+              Welcome to <span className="text-amber-400">SkillSync!</span>
             </h1>
             
             <p className="text-lg md:text-xl text-white/70 mb-8 max-w-2xl">
-              Fast-track your journey to becoming a Full Stack Developer earning 6-12+ LPA. Exclusive program designed for Tier 2 & 3 College Graduates.
+            Connects talented candidates with the right employers, making job searching seamless and hiring effortless.
+            Whether you're looking for the next opportunity or the perfect candidate, we've got you covered.
             </p>
             
             <div className="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
