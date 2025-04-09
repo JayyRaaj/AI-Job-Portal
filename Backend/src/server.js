@@ -39,3 +39,5 @@ app.use('/api/reminders', interviewReminderRoutes);
 const marketInsightRoutes = require('./routes/marketInsightRoutes');
 app.use('/api/insights', marketInsightRoutes);
 
+const candidateScreeningRoutes = require('./routes/candidateScreeningRoutes');
+app.use('/api/screenings', candidateScreeningRoutes);
