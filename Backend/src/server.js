@@ -32,3 +32,6 @@ app.use('/api/applications', applicationRoutes);
 
 const recommendationRoutes = require('./routes/recommendationRoutes');
 app.use('/api/recommendations', recommendationRoutes);
+
+const interviewReminderRoutes = require('./routes/interviewReminderRoutes');
+app.use('/api/reminders', interviewReminderRoutes);
