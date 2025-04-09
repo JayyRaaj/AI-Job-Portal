@@ -19,3 +19,7 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 const profileRoutes = require('./routes/profileRoutes');
 app.use('/api/profiles', profileRoutes);
+
+const resumeRoutes = require('./routes/resumeRoutes');
+app.use('/api/resumes', resumeRoutes);
+app.use('/uploads', express.static('uploads'));
