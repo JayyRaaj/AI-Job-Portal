@@ -23,3 +23,6 @@ app.use('/api/profiles', profileRoutes);
 const resumeRoutes = require('./routes/resumeRoutes');
 app.use('/api/resumes', resumeRoutes);
 app.use('/uploads', express.static('uploads'));
+
+const jobRoutes = require('./routes/jobRoutes');
+app.use('/api/jobs', jobRoutes);
