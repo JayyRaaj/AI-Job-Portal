@@ -26,3 +26,6 @@ app.use('/uploads', express.static('uploads'));
 
 const jobRoutes = require('./routes/jobRoutes');
 app.use('/api/jobs', jobRoutes);
+
+const applicationRoutes = require('./routes/applicationRoutes');
+app.use('/api/applications', applicationRoutes);
