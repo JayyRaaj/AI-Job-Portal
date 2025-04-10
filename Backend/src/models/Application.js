@@ -13,13 +13,12 @@ const Application = {
 
   getByUser: (user_id, callback) => {
     db.query(`
-      SELECT a.*, j.title, j.company_name
-      FROM Applications a
-      JOIN Jobs j ON a.job_id = j.id
-      WHERE a.user_id = ?
-      ORDER BY a.applied_at DESC
+      SELECT * FROM applications
+      WHERE user_id = ?
+      ORDER BY applied_at DESC
     `, [user_id], callback);
   },
+  
 
   getByJob: (job_id, callback) => {
     db.query(`

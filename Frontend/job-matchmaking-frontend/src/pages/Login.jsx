@@ -1,9 +1,13 @@
-import MainLayout from "../layouts/MainLayout";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+const navigate = useNavigate();
+
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -17,6 +21,7 @@ function Login() {
       if (res.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('userId', data.user.id);
+        navigate("/dashboard/jobseeker"); // or any home route
         alert('Login successful');
         console.log(data.user);
       } else {
@@ -28,7 +33,6 @@ function Login() {
   };
 
   return (
-    <MainLayout>
       <div className="max-w-md mx-auto mt-20 bg-white shadow-xl rounded-2xl overflow-hidden">
         <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-6 px-8 text-center">
           <h2 className="text-3xl font-semibold">Welcome Back</h2>
@@ -80,7 +84,6 @@ function Login() {
           </form>
         </div>
       </div>
-    </MainLayout>
   );
 }
 
