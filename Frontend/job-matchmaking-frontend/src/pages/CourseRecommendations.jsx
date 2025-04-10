@@ -5,72 +5,32 @@ import react from "../assets/images/react.png";
 import dsa from "../assets/images/dsa.jpg";
 import ux from "../assets/images/ux.jpg";
 import ml from "../assets/images/ml.jpg";
+import { useEffect, useState } from "react";
 
 function CourseRecommendations() {
-  const [expanded, setExpanded] = useState(null);
   
-  const courses = [
-    {
-      id: 1,
-      title: "React for Beginners",
-      platform: "Udemy",
-      duration: "12 hours",
-      rating: 4.7,
-      students: "14,320",
-      price: "$19.99",
-      instructor: "Sarah Johnson",
-      level: "Beginner",
-      img: react,
-      tags: ["Frontend", "JavaScript", "React"],
-      description: "Start your journey with React.js, from setup to building interactive UIs. Learn component architecture, state management, and modern React practices with hooks.",
-      updated: "Last updated March 2025"
-    },
-    {
-      id: 2,
-      title: "Data Structures in Python",
-      platform: "Coursera",
-      duration: "8 hours",
-      rating: 4.6,
-      students: "29,845",
-      price: "Free",
-      instructor: "Prof. Michael Chen",
-      level: "Intermediate",
-      img: dsa,
-      tags: ["Python", "Computer Science", "Algorithms"],
-      description: "Master essential data structures in Python. This course covers lists, dictionaries, trees, graphs, and advanced algorithms with practical applications for technical interviews.",
-      updated: "Last updated January 2025"
-    },
-    {
-      id: 3,
-      title: "UX Design Fundamentals",
-      platform: "Udacity",
-      duration: "20 hours",
-      rating: 4.8,
-      students: "8,754",
-      price: "$24.99",
-      instructor: "Emma Clark",
-      level: "Beginner",
-      img: ux, 
-      tags: ["UX/UI", "Design", "Prototyping"],
-      description: "Learn the principles of user experience design through hands-on projects. This course teaches research methods, wireframing, prototyping, and usability testing techniques.",
-      updated: "Last updated February 2025"
-    },
-    {
-      id: 4,
-      title: "Machine Learning Specialization",
-      platform: "edX",
-      duration: "40 hours",
-      rating: 4.9,
-      students: "42,156",
-      price: "$49.99",
-      instructor: "Dr. James Wilson",
-      level: "Advanced",
-      img: ml,
-      tags: ["AI/ML", "Data Science", "Python"],
-      description: "Comprehensive machine learning curriculum covering supervised learning, neural networks, decision trees, and deep learning with TensorFlow and PyTorch.",
-      updated: "Last updated March 2025"
-    }
-  ];
+
+const [courses, setCourses] = useState([]);
+const [expanded, setExpanded] = useState(null);
+
+useEffect(() => {
+  const fetchCourses = async () => {
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`http://localhost:5000/api/recommendations/courses/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json();
+    setCourses(data);
+  };
+
+  fetchCourses();
+}, []);
+
 
   const toggleExpand = (id) => {
     setExpanded(expanded === id ? null : id);
@@ -149,8 +109,7 @@ function CourseRecommendations() {
             >
               <div className="relative">
                 <img 
-                  src={course.img} 
-                  alt={course.title} 
+src={course.image_url || "https://via.placeholder.com/300"}                   alt={course.title} 
                   className="w-full h-48 object-cover"
                 />
                 <div className="absolute top-3 right-3 flex gap-2">
@@ -189,7 +148,7 @@ function CourseRecommendations() {
                 </div>
                 
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {course.tags.map((tag, index) => (
+                  {(course.tags?.split(',') || []).map((tag, index) => (
                     <span key={index} className="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
                       {tag}
                     </span>
