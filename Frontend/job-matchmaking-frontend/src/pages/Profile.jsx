@@ -3,11 +3,10 @@ import { UserCog, Settings2, ShieldCheck, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 
 function Profile() {
-  const userId = localStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
 
   const [profile, setProfile] = useState({
-    name: "",
-    email: "",
+ 
     phone: "",
     address: "",
     education: "",
@@ -27,8 +26,6 @@ function Profile() {
     if (res.ok) {
       const data = await res.json();
       setProfile({
-        name: data.name || "",
-        email: data.email || "",
         phone: data.phone || "",
         address: data.address || "",
         education: data.education || "",
@@ -39,8 +36,6 @@ function Profile() {
         linkedin: data.linkedin || "",
         github: data.github || "",
         bio: data.bio || "",
-        showInSearch: !!data.show_in_search,
-        allowRecruiters: !!data.allow_recruiters,
       });
     }
   };
@@ -77,7 +72,7 @@ function Profile() {
           Basic Information
         </h2>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          
+
           
           <input
             type="text"

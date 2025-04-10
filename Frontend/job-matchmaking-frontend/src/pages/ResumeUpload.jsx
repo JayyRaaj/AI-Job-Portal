@@ -20,8 +20,8 @@ function ResumeUpload() {
     const formData = new FormData();
     formData.append("resume", file);
 
-    const userId = localStorage.getItem("userId");
-    const token = localStorage.getItem("token");
+    const userId = sessionStorage.getItem("userId");
+    const token = sessionStorage.getItem("token");
 
     const res = await fetch(`http://localhost:5000/api/resumes/${userId}`, {
       method: "POST",

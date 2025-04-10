@@ -7,8 +7,8 @@ function CandidateScreening() {
 const [candidates, setCandidates] = useState([]);
 
 useEffect(() => {
-  const employerId = localStorage.getItem("userId");
-  const token = localStorage.getItem("token");
+  const employerId = sessionStorage.getItem("userId");
+  const token = sessionStorage.getItem("token");
 
   const fetchScreenings = async () => {
     const res = await fetch(`http://localhost:5000/api/screenings/employer/${employerId}`, {

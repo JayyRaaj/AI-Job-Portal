@@ -12,8 +12,8 @@ function JobManagement() {
     description: "",
   });
 
-  const employerId = localStorage.getItem("userId");
-  const token = localStorage.getItem("token");
+  const employerId = sessionStorage.getItem("userId");
+  const token = sessionStorage.getItem("token");
 
   useEffect(() => {
     const fetchJobs = async () => {

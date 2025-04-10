@@ -13,9 +13,15 @@ const Application = {
 
   getByUser: (user_id, callback) => {
     db.query(`
-      SELECT * FROM applications
-      WHERE user_id = ?
-      ORDER BY applied_at DESC
+      SELECT 
+        a.*, 
+        j.title, j.description, j.location, j.type, j.salary_min, j.salary_max,
+        j.experience_required, j.education_required, j.industry, j.remote
+      FROM applications a
+      JOIN jobs j ON a.job_id = j.id
+      WHERE a.user_id = ?
+      ORDER BY a.applied_at DESC;
+
     `, [user_id], callback);
   },
   

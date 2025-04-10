@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 
 function ApplicationTracking() {
   const [apps, setApps] = useState([]);
-  const userId = localStorage.getItem("userId");
-  const token = localStorage.getItem("token");
+  const userId = sessionStorage.getItem("userId");
+  const token = sessionStorage.getItem("token");
 
   useEffect(() => {
     const fetchApplications = async () => {
@@ -58,7 +58,7 @@ function ApplicationTracking() {
       </div>
 
       <div className="space-y-5">
-        {apps.map((app, i) => {
+        {filteredApps.map((app, i) => {
           let color = "bg-gray-100 text-gray-600";
           if (app.status === "applied") color = "bg-blue-100 text-blue-700";
           else if (app.status === "interviewed")
@@ -80,6 +80,13 @@ function ApplicationTracking() {
                   ? `Interview: ${new Date(app.interview_date).toLocaleString()} • ${app.platform}`
                   : "No interview scheduled"
               }
+              resumeId={app.resume_id}
+              userId={app.user_id}
+              jobId={app.job_id}
+              coverLetter={app.cover_letter}
+              description={app.description}
+              location={app.location}
+              type={app.type}
             />
           );
         })}
@@ -88,7 +95,21 @@ function ApplicationTracking() {
   );
 }
 
-const AppCard = ({ title, company, applied, status, statusColor, detail }) => (
+const AppCard = ({
+  title,
+  company,
+  applied,
+  status,
+  statusColor,
+  detail,
+  resumeId,
+  userId,
+  jobId,
+  coverLetter,
+  description,
+  location,
+  type,
+}) => (
   <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-md hover:shadow-lg transition">
     <div className="flex justify-between items-start">
       <div>
@@ -104,10 +125,28 @@ const AppCard = ({ title, company, applied, status, statusColor, detail }) => (
         {status}
       </span>
     </div>
-    <p className="text-sm text-gray-500 mt-4 flex items-center gap-1">
-      <CalendarDays className="w-4 h-4" />
-      {detail}
-    </p>
+
+    <div className="text-sm text-gray-500 mt-4 space-y-1">
+      <p className="flex items-center gap-1">
+        <CalendarDays className="w-4 h-4" />
+        {detail}
+      </p>
+      <p>
+        <strong>Job ID:</strong> {jobId}
+      </p>
+      <p>
+        <strong>Location:</strong> {location}
+      </p>
+      <p>
+        <strong>Type:</strong> {type}
+      </p>
+      <p>
+        <strong>Description:</strong> {description}
+      </p>
+      <p>
+        <strong>Cover Letter:</strong> {coverLetter}
+      </p>
+    </div>
   </div>
 );
 

@@ -7,8 +7,8 @@ function InterviewReminders() {
 
   useEffect(() => {
     const fetchReminders = async () => {
-      const userId = localStorage.getItem("userId");
-      const token = localStorage.getItem("token");
+      const userId = sessionStorage.getItem("userId");
+      const token = sessionStorage.getItem("token");
 
       const res = await fetch(`http://localhost:5000/api/reminders`, {
         headers: { Authorization: `Bearer ${token}` },

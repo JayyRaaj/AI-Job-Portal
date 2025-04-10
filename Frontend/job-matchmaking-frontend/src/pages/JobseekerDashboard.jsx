@@ -21,8 +21,8 @@ function JobseekerDashboard() {
   const [recommendedJobs, setRecommendedJobs] = useState([]);
   const [interviews, setInterviews] = useState([]);
 
-  const userId = localStorage.getItem("userId");
-  const token = localStorage.getItem("token");
+  const userId = sessionStorage.getItem("userId");
+  const token = sessionStorage.getItem("token");
 
   useEffect(() => {
     const fetchData = async () => {

@@ -53,7 +53,7 @@ function Navbar() {
         {role === "employer" && (
           <>
             <NavItem to="/dashboard/employer" label="Employer" />
-            <NavItem to="/job-management" label="Mgmt" />
+            <NavItem to="/job-management" label="Management" />
             <NavItem to="/candidate-screening" label="Screen" />
           </>
         )}
