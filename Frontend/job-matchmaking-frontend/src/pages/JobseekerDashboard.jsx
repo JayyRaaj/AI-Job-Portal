@@ -10,53 +10,51 @@ import {
   Building2,
 } from "lucide-react";
 
-
-
 function JobseekerDashboard() {
+  const [stats, setStats] = useState({
+    applications: 0,
+    interviews: 0,
+    savedJobs: 0,
+    profileComplete: "0%",
+  });
 
+  const [recommendedJobs, setRecommendedJobs] = useState([]);
+  const [interviews, setInterviews] = useState([]);
 
-const [stats, setStats] = useState({
-  applications: 0,
-  interviews: 0,
-  savedJobs: 0,
-  profileComplete: "0%",
-});
+  const userId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
 
-const [recommendedJobs, setRecommendedJobs] = useState([]);
-const [interviews, setInterviews] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const headers = { Authorization: `Bearer ${token}` };
 
-const userId = localStorage.getItem('userId');
-const token = localStorage.getItem('token');
+      const [appsRes, recRes, intRes] = await Promise.all([
+        fetch(`http://localhost:5000/api/applications/user/${userId}`, {
+          headers,
+        }),
+        fetch(`http://localhost:5000/api/recommendations/jobs/${userId}`, {
+          headers,
+        }),
+        fetch(`http://localhost:5000/api/reminders/${userId}`, { headers }),
+      ]);
 
-useEffect(() => {
-  const fetchData = async () => {
-    const headers = { Authorization: `Bearer ${token}` };
+      const applications = await appsRes.json();
+      const recommendations = await recRes.json();
+      const reminders = await intRes.json();
 
-    const [appsRes, recRes, intRes] = await Promise.all([
-      fetch(`http://localhost:5000/api/applications/user/${userId}`, { headers }),
-      fetch(`http://localhost:5000/api/recommendations/jobs/${userId}`, { headers }),
-      fetch(`http://localhost:5000/api/reminders/${userId}`, { headers }),
-    ]);
+      setStats({
+        applications: applications.length,
+        interviews: reminders.length,
+        savedJobs: 5, // placeholder
+        profileComplete: "80%", // placeholder
+      });
 
-    const applications = await appsRes.json();
-    const recommendations = await recRes.json();
-    const reminders = await intRes.json();
+      setRecommendedJobs(recommendations);
+      setInterviews(reminders);
+    };
 
-    setStats({
-      applications: applications.length,
-      interviews: reminders.length,
-      savedJobs: 5, // placeholder
-      profileComplete: "80%" // placeholder
-    });
-
-    setRecommendedJobs(recommendations);
-    setInterviews(reminders);
-  };
-
-  fetchData();
-}, []);
-
-
+    fetchData();
+  }, []);
 
   return (
     <MainLayout>
@@ -64,35 +62,72 @@ useEffect(() => {
         <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
           Welcome, Jobseeker
         </h1>
-        <p className="text-lg text-gray-500 mt-1">Here's your job hunt overview.</p>
+        <p className="text-lg text-gray-500 mt-1">
+          Here's your job hunt overview.
+        </p>
       </div>
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-        <StatCard icon={<Briefcase className="text-indigo-600 w-6 h-6" />} label="Applications" value="12" />
-        <StatCard icon={<CalendarDays className="text-green-600 w-6 h-6" />} label="Scheduled Interviews" value="3" />
-        <StatCard icon={<Bookmark className="text-yellow-600 w-6 h-6" />} label="Saved Jobs" value="5" />
-        <StatCard icon={<GaugeCircle className="text-purple-600 w-6 h-6" />} label="Profile Complete" value="80%" />
+        <StatCard
+          icon={<Briefcase className="text-indigo-600 w-6 h-6" />}
+          label="Applications"
+          value={stats.applications}
+        />
+        <StatCard
+          icon={<CalendarDays className="text-green-600 w-6 h-6" />}
+          label="Scheduled Interviews"
+          value={stats.interviews}
+        />
+        <StatCard
+          icon={<Bookmark className="text-yellow-600 w-6 h-6" />}
+          label="Saved Jobs"
+          value={stats.savedJobs}
+        />
+        <StatCard
+          icon={<GaugeCircle className="text-purple-600 w-6 h-6" />}
+          label="Profile Complete"
+          value={stats.profileComplete}
+        />
       </section>
 
       <section className="mb-12">
         <div className="flex items-center gap-2 mb-4">
           <Sparkles className="w-5 h-5 text-indigo-500" />
-          <h2 className="text-2xl font-semibold text-gray-800">Recommended Jobs</h2>
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Recommended Jobs
+          </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <JobCard title="Frontend Developer" company="ABC Corp" />
-          <JobCard title="React Native Engineer" company="XYZ Ltd" />
+          {recommendedJobs.map((job, i) => (
+            <JobCard
+              key={i}
+              title={job.title}
+              company={job.company_name || "N/A"}
+            />
+          ))}
         </div>
       </section>
 
       <section>
         <div className="flex items-center gap-2 mb-4">
           <CalendarDays className="w-5 h-5 text-green-600" />
-          <h2 className="text-2xl font-semibold text-gray-800">Upcoming Interviews</h2>
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Upcoming Interviews
+          </h2>
         </div>
         <ul className="space-y-4">
-          <InterviewItem title="Software Engineer" company="ABC Corp" date="5 Apr" time="10:00 AM" />
-          <InterviewItem title="Frontend Developer" company="XYZ Ltd" date="8 Apr" time="2:00 PM" />
+          {interviews.map((item, i) => (
+            <InterviewItem
+              key={i}
+              title={item.title}
+              company={item.company || "N/A"}
+              date={new Date(item.interview_date).toLocaleDateString()}
+              time={new Date(item.interview_date).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            />
+          ))}
         </ul>
       </section>
     </MainLayout>
@@ -125,7 +160,9 @@ const InterviewItem = ({ title, company, date, time }) => (
     <p className="text-gray-800 font-semibold">
       {title} <span className="text-gray-500 font-normal">@ {company}</span>
     </p>
-    <p className="text-sm text-gray-500">{date}, {time}</p>
+    <p className="text-sm text-gray-500">
+      {date}, {time}
+    </p>
   </li>
 );
 
