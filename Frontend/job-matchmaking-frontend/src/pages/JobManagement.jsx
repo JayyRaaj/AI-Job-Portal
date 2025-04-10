@@ -1,19 +1,68 @@
 import MainLayout from "../layouts/MainLayout";
 import { Briefcase, PlusCircle, Edit, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 function JobManagement() {
-  const jobs = [
-    {
-      title: "React Developer",
-      applicants: 5,
-      posted: "Mar 22",
-    },
-    {
-      title: "Node.js Backend Engineer",
-      applicants: 3,
-      posted: "Mar 19",
-    },
-  ];
+  const [jobs, setJobs] = useState([]);
+  const [form, setForm] = useState({
+    title: "",
+    location: "",
+    salary_range: "",
+    type: "Full-time",
+    description: "",
+  });
+
+  const employerId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      const res = await fetch(
+        `http://localhost:5000/api/jobs/employer/${employerId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const data = await res.json();
+      setJobs(data);
+    };
+    fetchJobs();
+  }, []);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const res = await fetch(`http://localhost:5000/api/jobs`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ ...form, employer_id: employerId }),
+    });
+    if (res.ok) {
+      alert("Job posted");
+      setForm({
+        title: "",
+        location: "",
+        salary_range: "",
+        type: "Full-time",
+        description: "",
+      });
+      const updated = await fetch(
+        `http://localhost:5000/api/jobs/employer/${employerId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setJobs(await updated.json());
+    } else {
+      alert("Failed to post job");
+    }
+  };
 
   return (
     <MainLayout>
@@ -22,30 +71,62 @@ function JobManagement() {
           <Briefcase className="w-8 h-8 text-blue-500" />
           Job Posting & Management
         </h1>
-        <p className="text-lg text-gray-500 mt-2 ml-10">Manage your open roles and find top talent faster.</p>
+        <p className="text-lg text-gray-500 mt-2 ml-10">
+          Manage your open roles and find top talent faster.
+        </p>
       </div>
 
       <section className="mb-12">
         <div className="flex items-center gap-2 mb-4">
           <PlusCircle className="w-5 h-5 text-green-600" />
-          <h2 className="text-2xl font-semibold text-gray-800">Create New Job</h2>
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Create New Job
+          </h2>
         </div>
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-8 rounded-3xl border border-gray-100 shadow-xl">
-          <input type="text" placeholder="Job Title" className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
-          <input type="text" placeholder="Location" className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
-          <input type="text" placeholder="Salary Range" className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
-          <select className="p-4 border border-gray-200 rounded-xl text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none">
-            <option>Job Type</option>
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-8 rounded-3xl border border-gray-100 shadow-xl"
+        >
+          <input
+            value={form.title}
+            type="text"
+            placeholder="Job Title"
+            className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+          <input
+            value={form.location}
+            type="text"
+            placeholder="Location"
+            className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+          <input
+            value={form.salary_range}
+            type="text"
+            placeholder="Salary Range"
+            className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+          <select
+            name="type"
+            value={form.type}
+            onChange={handleChange}
+            className="p-4 border border-gray-200 rounded-xl text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
+          >
             <option>Full-time</option>
             <option>Part-time</option>
             <option>Contract</option>
           </select>
           <textarea
+            name="description"
+            value={form.description}
+            onChange={handleChange}
             placeholder="Job Description"
             className="col-span-2 p-4 border border-gray-200 rounded-xl h-32 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
           />
           <div className="col-span-2 text-right">
-            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition">
+            <button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition"
+            >
               Post Job
             </button>
           </div>
@@ -53,7 +134,9 @@ function JobManagement() {
       </section>
 
       <section>
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Active Postings</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+          Active Postings
+        </h2>
         <div className="space-y-5">
           {jobs.map((job, i) => (
             <div
@@ -62,7 +145,10 @@ function JobManagement() {
             >
               <div>
                 <h3 className="text-lg font-bold text-gray-900">{job.title}</h3>
-                <p className="text-sm text-gray-500">{job.applicants} Applicants • Posted on {job.posted}</p>
+                <p className="text-sm text-gray-500">
+                  {job.applicants_count || 0} Applicants • Posted on{" "}
+                  {new Date(job.posted_at).toDateString()}
+                </p>
               </div>
               <div className="flex gap-3">
                 <button className="inline-flex items-center gap-1 text-sm px-4 py-2 rounded-xl border text-blue-600 hover:bg-blue-50 transition">
