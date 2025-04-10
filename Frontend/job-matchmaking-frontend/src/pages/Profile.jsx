@@ -158,12 +158,7 @@ function Profile() {
         </div>
       </div>
 
-      <textarea
-        placeholder="Describe your experience and skills..."
-        value={profile.experience}
-        onChange={(e) => setProfile({ ...profile, experience: e.target.value })}
-        className="w-full h-40 p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
-      />
+      
 
     
      
