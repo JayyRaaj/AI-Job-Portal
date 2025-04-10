@@ -1,4 +1,29 @@
 import MainLayout from "../layouts/MainLayout";
+import { useState } from "react";
+
+const [email, setEmail] = useState('');
+const [password, setPassword] = useState('');
+
+const handleLogin = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await fetch('http://localhost:5000/api/users/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert('Login successful');
+      console.log(data.user); // store in state or localStorage
+    } else {
+      alert(data.error);
+    }
+  } catch (err) {
+    alert('Login failed');
+  }
+};
+
 
 function Login() {
   return (
@@ -10,17 +35,22 @@ function Login() {
         </div>
 
         <div className="px-8 py-10">
-          <form className="space-y-5">
-            <input
-              type="email"
-              placeholder="Email"
-              className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+        <form className="space-y-5" onSubmit={handleLogin}>
+  <input
+    type="email"
+    placeholder="Email"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+    className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+  <input
+    type="password"
+    placeholder="Password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+
 
             <div className="flex justify-between items-center text-sm text-gray-600">
               <label className="flex items-center gap-2">
