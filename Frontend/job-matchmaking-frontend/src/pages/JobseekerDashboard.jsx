@@ -32,10 +32,10 @@ function JobseekerDashboard() {
         fetch(`http://localhost:5000/api/applications/user/${userId}`, {
           headers,
         }),
-        fetch(`http://localhost:5000/api/recommendations/jobs/${userId}`, {
+        fetch(`http://localhost:5000/api/recommendations/jobs/`, {
           headers,
         }),
-        fetch(`http://localhost:5000/api/reminders/${userId}`, { headers }),
+        fetch(`http://localhost:5000/api/reminders/`, { headers }),
       ]);
 
       const applications = await appsRes.json();
@@ -102,7 +102,7 @@ function JobseekerDashboard() {
             <JobCard
               key={i}
               title={job.title}
-              company={job.company_name || "N/A"}
+              company={job.location || "N/A"}
             />
           ))}
         </div>
@@ -120,7 +120,7 @@ function JobseekerDashboard() {
             <InterviewItem
               key={i}
               title={item.title}
-              company={item.company || "N/A"}
+              company={item.platform || "N/A"}
               date={new Date(item.interview_date).toLocaleDateString()}
               time={new Date(item.interview_date).toLocaleTimeString([], {
                 hour: "2-digit",

@@ -4,6 +4,6 @@ const router = express.Router();
 const controller = require('../controllers/interviewReminderController');
 
 router.post('/', controller.createReminder);
-router.get('/:userId', controller.getUserReminders);
+router.get('/', controller.getUserReminders);
 
 module.exports = router;

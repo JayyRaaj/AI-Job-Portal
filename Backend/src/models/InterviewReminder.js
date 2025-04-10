@@ -11,16 +11,15 @@ const InterviewReminder = {
     db.query(sql, [application_id, interview_date, reminder_time, platform, meeting_link], callback);
   },
 
-  getByUser: (user_id, callback) => {
+  getByUser: (callback) => {
     const sql = `
       SELECT ir.*, j.title, a.user_id 
       FROM InterviewReminders ir
       JOIN Applications a ON ir.application_id = a.id
       JOIN Jobs j ON a.job_id = j.id
-      WHERE a.user_id = ?
       ORDER BY interview_date ASC
     `;
-    db.query(sql, [user_id], callback);
+    db.query(sql,  callback);
   },
 
   markAsSent: (id, callback) => {

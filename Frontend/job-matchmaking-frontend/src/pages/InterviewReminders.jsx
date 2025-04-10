@@ -10,7 +10,7 @@ function InterviewReminders() {
       const userId = localStorage.getItem("userId");
       const token = localStorage.getItem("token");
 
-      const res = await fetch(`http://localhost:5000/api/reminders/${userId}`, {
+      const res = await fetch(`http://localhost:5000/api/reminders`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

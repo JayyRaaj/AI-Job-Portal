@@ -10,8 +10,7 @@ exports.createReminder = (req, res) => {
 };
 
 exports.getUserReminders = (req, res) => {
-  const { userId } = req.params;
-  Reminder.getByUser(userId, (err, results) => {
+  Reminder.getByUser( (err, results) => {
     if (err) return res.status(500).json({ error: 'Failed to fetch reminders' });
     res.json(results);
   });

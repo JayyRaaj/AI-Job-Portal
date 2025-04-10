@@ -24,7 +24,7 @@ function JobRecommendations() {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `http://localhost:5000/api/recommendations/jobs/${userId}`,
+        `http://localhost:5000/api/recommendations/jobs`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -162,26 +162,7 @@ function JobRecommendations() {
           ))}
         </div>
 
-        {/* Pagination */}
-        <div className="flex justify-center mt-8">
-          <div className="flex items-center gap-2">
-            <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-300 bg-white">
-              &lt;
-            </button>
-            <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-white">
-              1
-            </button>
-            <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-300 bg-white">
-              2
-            </button>
-            <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-300 bg-white">
-              3
-            </button>
-            <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-300 bg-white">
-              &gt;
-            </button>
-          </div>
-        </div>
+        
       </div>
     </MainLayout>
   );
