@@ -14,6 +14,8 @@ const handleLogin = async (e) => {
     });
     const data = await res.json();
     if (res.ok) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userId', data.user.id);
       alert('Login successful');
       console.log(data.user); // store in state or localStorage
     } else {
@@ -60,7 +62,7 @@ function Login() {
               <a href="#" className="text-blue-600 hover:underline">Forgot password?</a>
             </div>
 
-            <button
+            <button 
               type="submit"
               className="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-medium"
             >

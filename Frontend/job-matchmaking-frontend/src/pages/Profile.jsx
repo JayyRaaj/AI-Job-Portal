@@ -1,6 +1,52 @@
 import MainLayout from "../layouts/MainLayout";
 import { UserCog, Settings2, ShieldCheck, Save } from "lucide-react";
 
+import { useEffect, useState } from "react";
+
+const userId = 1; // Replace with actual logged-in user ID
+
+const [profile, setProfile] = useState({
+  name: "",
+  email: "",
+  phone: "",
+  address: "",
+  experience: "",
+  showInSearch: false,
+  allowRecruiters: false
+});
+
+const fetchProfile = async () => {
+  const res = await fetch(`http://localhost:5000/api/profiles/${userId}`);
+  if (res.ok) {
+    const data = await res.json();
+    setProfile({
+      name: data.name || "",
+      email: data.email || "",
+      phone: data.phone || "",
+      address: data.address || "",
+      experience: data.experience || "",
+      showInSearch: !!data.show_in_search,
+      allowRecruiters: !!data.allow_recruiters
+    });
+  }
+};
+
+const saveProfile = async () => {
+  const res = await fetch(`http://localhost:5000/api/profiles/${userId}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(profile)
+  });
+  if (res.ok) alert("Profile saved");
+  else alert("Save failed");
+};
+
+useEffect(() => {
+  fetchProfile();
+}, []);
+
+
+
 function Profile() {
   return (
     <MainLayout>
