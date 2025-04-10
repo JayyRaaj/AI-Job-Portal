@@ -8,42 +8,127 @@ import {
   UserCheck,
 } from "lucide-react";
 
+import { useEffect, useState } from "react";
+
 function EmployerDashboard() {
+  const [stats, setStats] = useState({
+    active: 0,
+    applications: 0,
+    interviews: 0,
+    drafts: 0,
+  });
+
+  const [recentApps, setRecentApps] = useState([]);
+  const [upcomingInterviews, setUpcomingInterviews] = useState([]);
+
+  const employerId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const headers = { Authorization: `Bearer ${token}` };
+
+      const [jobsRes, appsRes, remindersRes] = await Promise.all([
+        fetch(`http://localhost:5000/api/jobs/employer/${employerId}`, {
+          headers,
+        }),
+        fetch(`http://localhost:5000/api/applications/employer/${employerId}`, {
+          headers,
+        }),
+        fetch(`http://localhost:5000/api/reminders/employer/${employerId}`, {
+          headers,
+        }),
+      ]);
+
+      const jobs = await jobsRes.json();
+      const apps = await appsRes.json();
+      const reminders = await remindersRes.json();
+
+      setStats({
+        active: jobs.length,
+        applications: apps.length,
+        interviews: reminders.length,
+        drafts: jobs.filter((j) => j.status === "draft").length,
+      });
+
+      setRecentApps(apps.slice(0, 4)); // latest 4
+      setUpcomingInterviews(reminders.slice(0, 4)); // latest 4
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <MainLayout>
       <div className="mb-10">
         <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
           👋 Welcome, Employer
         </h1>
-        <p className="text-lg text-gray-500 mt-1">Manage your postings, candidates, and interviews all in one place.</p>
+        <p className="text-lg text-gray-500 mt-1">
+          Manage your postings, candidates, and interviews all in one place.
+        </p>
       </div>
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-        <StatCard icon={<Briefcase className="text-indigo-600 w-6 h-6" />} label="Active Postings" value="8" />
-        <StatCard icon={<Users className="text-blue-600 w-6 h-6" />} label="Applications Received" value="27" />
-        <StatCard icon={<CalendarCheck2 className="text-green-600 w-6 h-6" />} label="Scheduled Interviews" value="5" />
-        <StatCard icon={<FileText className="text-yellow-600 w-6 h-6" />} label="Drafts" value="2" />
+        <StatCard
+          icon={<Briefcase className="text-indigo-600 w-6 h-6" />}
+          label="Active Postings"
+          value={stats.active}
+        />
+        <StatCard
+          icon={<Users className="text-blue-600 w-6 h-6" />}
+          label="Applications Received"
+          value={stats.applications}
+        />
+        <StatCard
+          icon={<CalendarCheck2 className="text-green-600 w-6 h-6" />}
+          label="Scheduled Interviews"
+          value={stats.interviews}
+        />
+        <StatCard
+          icon={<FileText className="text-yellow-600 w-6 h-6" />}
+          label="Drafts"
+          value={stats.drafts}
+        />
       </section>
 
       <section className="mb-12">
         <div className="flex items-center gap-2 mb-4">
           <ClipboardList className="w-5 h-5 text-indigo-500" />
-          <h2 className="text-2xl font-semibold text-gray-800">Recent Applications</h2>
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Recent Applications
+          </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <ApplicationCard name="John Doe" position="Frontend Developer" />
-          <ApplicationCard name="Jane Smith" position="UI/UX Designer" />
+          {recentApps.map((app, i) => (
+            <ApplicationCard
+              key={i}
+              name={app.applicant_name}
+              position={app.job_title}
+            />
+          ))}
         </div>
       </section>
 
       <section>
         <div className="flex items-center gap-2 mb-4">
           <UserCheck className="w-5 h-5 text-green-600" />
-          <h2 className="text-2xl font-semibold text-gray-800">Interview Schedule</h2>
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Interview Schedule
+          </h2>
         </div>
         <ul className="space-y-4">
-          <InterviewItem name="John Doe" date="3 Apr" time="11:00 AM" />
-          <InterviewItem name="Jane Smith" date="6 Apr" time="3:00 PM" />
+          {upcomingInterviews.map((i, index) => (
+            <InterviewItem
+              key={index}
+              name={i.applicant_name}
+              date={new Date(i.interview_date).toLocaleDateString()}
+              time={new Date(i.interview_date).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            />
+          ))}
         </ul>
       </section>
     </MainLayout>
@@ -71,7 +156,9 @@ const ApplicationCard = ({ name, position }) => (
 const InterviewItem = ({ name, date, time }) => (
   <li className="bg-white p-5 rounded-3xl border border-gray-100 shadow-md hover:shadow-lg transition">
     <p className="text-gray-800 font-semibold">{name}</p>
-    <p className="text-sm text-gray-500">{date}, {time}</p>
+    <p className="text-sm text-gray-500">
+      {date}, {time}
+    </p>
   </li>
 );
 
