@@ -5,6 +5,7 @@ import { UploadCloud, FileCheck } from "lucide-react";
 function ResumeUpload() {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("");
+  const [insights, setInsights] = useState(null);
 
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
@@ -32,8 +33,11 @@ function ResumeUpload() {
     });
 
     const data = await res.json();
-    if (res.ok) alert("Resume uploaded");
-    else alert(data.error || "Upload failed");
+    if (res.ok) {
+      alert("Resume uploaded");
+      setInsights(data.insights);
+      console.log(data.insights); //
+    } else alert(data.error || "Upload failed");
   };
 
   return (
@@ -72,6 +76,50 @@ function ResumeUpload() {
           <div className="mt-6 flex items-center justify-center gap-2 text-green-600 font-medium">
             <FileCheck className="w-5 h-5" />
             Uploaded: {fileName}
+          </div>
+        )}
+
+        {insights && (
+          <div className="mt-10 text-left bg-gray-50 border border-gray-200 rounded-2xl p-6 shadow">
+            <h2 className="text-xl font-bold mb-4 text-gray-800">
+              Resume Insights
+            </h2>
+            <p>
+              <span className="font-semibold text-gray-600">Name:</span>{" "}
+              {insights.name}
+            </p>
+            <p>
+              <span className="font-semibold text-gray-600">Email:</span>{" "}
+              {insights.email}
+            </p>
+            <p>
+              <span className="font-semibold text-gray-600">Phone:</span>{" "}
+              {insights.phone}
+            </p>
+            <p>
+              <span className="font-semibold text-gray-600">Experience:</span>{" "}
+              {insights.experience} years
+            </p>
+            <p>
+              <span className="font-semibold text-gray-600">Skills:</span>{" "}
+              {insights.skills.join(", ") || "None found"}
+            </p>
+            <p>
+              <span className="font-semibold text-gray-600">Education:</span>{" "}
+              {insights.education.join(", ") || "Not found"}
+            </p>
+            <p>
+              <span className="font-semibold text-gray-600">Links:</span>
+            </p>
+            <ul className="list-disc ml-6 text-blue-600">
+              {insights.links.map((link, i) => (
+                <li key={i}>
+                  <a href={link} target="_blank" rel="noreferrer">
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
 

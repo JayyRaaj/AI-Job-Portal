@@ -13,6 +13,5 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post('/:userId', upload.single('resume'), resumeController.uploadResume);
-router.get('/:userId', resumeController.getResume);
 
 module.exports = router;

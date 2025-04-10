@@ -13,18 +13,56 @@ import { useEffect, useState } from "react";
 function JobRecommendations() {
   const [expanded, setExpanded] = useState(null);
   const [jobs, setJobs] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [experienceFilter, setExperienceFilter] = useState("");
+  const [sortOption, setSortOption] = useState("Relevance");
 
   const toggleExpand = (id) => {
     setExpanded(expanded === id ? null : id);
   };
 
+  const filteredJobs = jobs
+    .filter(
+      (job) =>
+        job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.industry.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .filter((job) => {
+      if (!experienceFilter) return true;
+      const exp = parseInt(job.experience_required);
+
+      if (experienceFilter === "Entry")
+        return (
+          job.experience_required.includes("0-1") ||
+          job.experience_required.startsWith("1")
+        );
+      if (experienceFilter === "Mid")
+        return (
+          job.experience_required.startsWith("2") ||
+          job.experience_required.startsWith("3")
+        );
+      if (experienceFilter === "Senior")
+        return (
+          job.experience_required.startsWith("4") ||
+          job.experience_required.startsWith("5") ||
+          job.experience_required.startsWith("6")
+        );
+    })
+    .sort((a, b) => {
+      if (sortOption === "Newest")
+        return new Date(b.posted_at) - new Date(a.posted_at);
+      if (sortOption === "Highest Salary") return b.salary_max - a.salary_max;
+      return 0;
+    });
+
   useEffect(() => {
-    const fetchRecommendations = async () => {
+    const fetchJobs = async () => {
       const userId = sessionStorage.getItem("userId");
       const token = sessionStorage.getItem("token");
 
       const res = await fetch(
-        `http://localhost:5000/api/recommendations/jobs`,
+        `http://localhost:5000/api/jobs`, // Changed the endpoint to /jobs to fetch all jobs
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -36,17 +74,15 @@ function JobRecommendations() {
       setJobs(data);
     };
 
-    fetchRecommendations();
+    fetchJobs();
   }, []);
 
   return (
     <MainLayout>
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">Recommended Jobs</h1>
-          <p className="text-gray-500">
-            Showing {jobs.length} jobs matching your profile
-          </p>
+          <h1 className="text-3xl font-bold">All Jobs</h1>
+          <p className="text-gray-500">Showing {jobs.length} jobs</p>
         </div>
 
         {/* Search and filter bar */}
@@ -60,26 +96,30 @@ function JobRecommendations() {
               <input
                 type="text"
                 placeholder="Search job titles, skills, companies..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <button className="flex items-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition">
-                <Filter size={18} />
-                <span>Filters</span>
-                <ChevronDown size={16} />
-              </button>
-              <select className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl appearance-none pr-8 focus:outline-none">
-                <option>Experience Level</option>
-                <option>Entry Level</option>
-                <option>Mid-Senior</option>
-                <option>Senior</option>
+
+              <select
+                className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl pr-8 focus:outline-none"
+                value={experienceFilter}
+                onChange={(e) => setExperienceFilter(e.target.value)}
+              >
+                <option value="">Experience Level</option>
+                <option value="Entry">Entry Level</option>
+                <option value="Mid">Mid-Senior</option>
+                <option value="Senior">Senior</option>
               </select>
-              <select className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl appearance-none pr-8 focus:outline-none">
-                <option>Sort by: Relevance</option>
-                <option>Newest</option>
-                <option>Highest Salary</option>
-                <option>Match Score</option>
+
+              <select
+                className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl pr-8 focus:outline-none"
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+              >
+                <option value="Relevance">Sort by: Relevance</option>
+                <option value="Newest">Newest</option>
+                <option value="Highest Salary">Highest Salary</option>
               </select>
             </div>
           </div>
@@ -87,7 +127,7 @@ function JobRecommendations() {
 
         {/* Job cards */}
         <div className="space-y-4">
-          {jobs.map((job) => (
+          {filteredJobs.map((job) => (
             <div
               key={job.id}
               className={`bg-white rounded-2xl shadow-sm overflow-hidden transition-all duration-300 ${expanded === job.id ? "ring-2 ring-primary/30" : "hover:shadow-md"}`}
@@ -118,11 +158,13 @@ function JobRecommendations() {
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <p className="text-sm font-medium text-gray-900">
-                        {job.salary}
+                        ${job.salary_min} - ${job.salary_max}
                       </p>
                       <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
                         <Clock size={14} />
-                        <span>{job.posted}</span>
+                        <span>
+                          {new Date(job.posted_at).toLocaleDateString()}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -144,6 +186,15 @@ function JobRecommendations() {
                 <div className="border-t border-gray-100 p-6 bg-gray-50">
                   <p className="text-gray-700 mb-6">{job.description}</p>
                   <div className="flex flex-wrap gap-3">
+                    <div className="flex items-center gap-3 text-sm text-gray-600">
+                      <span>Experience: {job.experience_required}</span>
+                      <span>Education: {job.education_required}</span>
+                      <span>Industry: {job.industry}</span>
+                      <span>{job.remote === 1 ? "Remote" : "On-site"}</span>
+                      <span>
+                        Deadline: {new Date(job.deadline).toLocaleDateString()}
+                      </span>
+                    </div>
                     <button className="px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary/90 transition flex items-center gap-2">
                       <Briefcase size={16} />
                       Apply Now
@@ -161,8 +212,6 @@ function JobRecommendations() {
             </div>
           ))}
         </div>
-
-        
       </div>
     </MainLayout>
   );
