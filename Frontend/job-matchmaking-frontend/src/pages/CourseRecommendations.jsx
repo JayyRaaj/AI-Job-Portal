@@ -1,4 +1,3 @@
-import { useState } from "react";
 import MainLayout from "../layouts/MainLayout";
 import { Search, BookOpen, Clock, Star, Award, Calendar, ChevronDown, Bookmark, Play, Filter } from "lucide-react";
 import react from "../assets/images/react.png";

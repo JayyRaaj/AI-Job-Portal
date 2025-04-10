@@ -1,33 +1,32 @@
 import MainLayout from "../layouts/MainLayout";
 import { useState } from "react";
 
-const [email, setEmail] = useState('');
-const [password, setPassword] = useState('');
-
-const handleLogin = async (e) => {
-  e.preventDefault();
-  try {
-    const res = await fetch('http://localhost:5000/api/users/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-    const data = await res.json();
-    if (res.ok) {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('userId', data.user.id);
-      alert('Login successful');
-      console.log(data.user); // store in state or localStorage
-    } else {
-      alert(data.error);
-    }
-  } catch (err) {
-    alert('Login failed');
-  }
-};
-
-
 function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('http://localhost:5000/api/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userId', data.user.id);
+        alert('Login successful');
+        console.log(data.user);
+      } else {
+        alert(data.error);
+      }
+    } catch (err) {
+      alert('Login failed');
+    }
+  };
+
   return (
     <MainLayout>
       <div className="max-w-md mx-auto mt-20 bg-white shadow-xl rounded-2xl overflow-hidden">
@@ -37,22 +36,21 @@ function Login() {
         </div>
 
         <div className="px-8 py-10">
-        <form className="space-y-5" onSubmit={handleLogin}>
-  <input
-    type="email"
-    placeholder="Email"
-    value={email}
-    onChange={(e) => setEmail(e.target.value)}
-    className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-  <input
-    type="password"
-    placeholder="Password"
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-
+          <form className="space-y-5" onSubmit={handleLogin}>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
 
             <div className="flex justify-between items-center text-sm text-gray-600">
               <label className="flex items-center gap-2">
@@ -62,7 +60,7 @@ function Login() {
               <a href="#" className="text-blue-600 hover:underline">Forgot password?</a>
             </div>
 
-            <button 
+            <button
               type="submit"
               className="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-medium"
             >

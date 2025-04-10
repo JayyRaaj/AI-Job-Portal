@@ -1,9 +1,12 @@
 import MainLayout from "../layouts/MainLayout";
 import { UserCog, Settings2, ShieldCheck, Save } from "lucide-react";
-
 import { useEffect, useState } from "react";
 
-const userId = localStorage.getItem('userId');
+
+
+function Profile() {
+
+  const userId = localStorage.getItem('userId');
 
 const [profile, setProfile] = useState({
   name: "",
@@ -47,7 +50,7 @@ useEffect(() => {
 
 
 
-function Profile() {
+
   return (
     <MainLayout>
       <div className="mb-10">

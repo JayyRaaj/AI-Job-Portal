@@ -9,10 +9,7 @@ import {
   ArrowRight,
   Star,
 } from "lucide-react";
-import { useState } from "react";
-import techVisionLogo from "../assets/images/techVision.png";
-import innovaTech from "../assets/images/innovaTech.png";
-import growthBoost from "../assets/images/growthBoost.png";
+
 import job from "../assets/images/Job.png";
 
 import { ChevronRight, Menu } from "lucide-react";
@@ -134,7 +131,7 @@ function Home() {
                   <div className="flex items-start mb-4">
                     <div className="h-12 w-12 rounded-md bg-gray-100 flex items-center justify-center overflow-hidden mr-4 flex-shrink-0">
                       <img
-                        src={job.logo || "https://via.placeholder.com/48"}
+                        src={job.logo || "https://placehold.co/600x400/000000/FFF"}
                         alt={job.company || "Company"}
                         className="w-full h-full object-cover"
                       />
@@ -159,16 +156,15 @@ function Home() {
                   <div className="flex items-center justify-between mb-4">
                     <span className="font-semibold text-gray-800">
                       {job.salary_min && job.salary_max
-                        ? `$${job.salary_min} - $${job.salary_max}`
+                        ? `$${job.salary_min} - $${job.salary_max}     `
                         : "N/A"}
 
-                      {new Date(job.posted_at).toLocaleDateString()}
                     </span>
                     <span className="text-xs text-gray-500">{job.posted}</span>
                   </div>
 
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {job.tags.map((tag, index) => (
+                  {(job.tags?.split(',') || []).map((tag, index) => (
                       <span
                         key={index}
                         className="inline-block bg-blue-50 text-blue-600 text-xs px-2 py-1 rounded-full"
