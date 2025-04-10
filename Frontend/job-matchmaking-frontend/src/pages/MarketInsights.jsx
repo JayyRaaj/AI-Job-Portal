@@ -1,7 +1,24 @@
 import MainLayout from "../layouts/MainLayout";
 import { TrendingUp, DollarSign, MapPin, Newspaper } from "lucide-react";
+import { useEffect, useState } from "react";
+
 
 function MarketInsights() {
+
+
+const [insights, setInsights] = useState([]);
+
+useEffect(() => {
+  const fetchInsights = async () => {
+    const res = await fetch('http://localhost:5000/api/insights');
+    if (res.ok) {
+      const data = await res.json();
+      setInsights(data);
+    }
+  };
+  fetchInsights();
+}, []); 
+
   return (
     <MainLayout>
       <div className="max-w-6xl mx-auto px-4">
@@ -153,41 +170,35 @@ function MarketInsights() {
 
         {/* News & Updates Section */}
         <div>
-          <div className="flex items-center mb-8">
-            <div className="p-3 bg-rose-100 rounded-2xl mr-4">
-              <Newspaper className="text-rose-600" size={24} />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-800">News & Updates</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <div className="bg-gradient-to-r from-rose-500 to-orange-500 h-3"></div>
-              <div className="p-6">
-                <span className="inline-block px-3 py-1 bg-rose-50 text-rose-600 text-xs rounded-full mb-4">Trending</span>
-                <h3 className="font-bold text-xl text-gray-800 mb-3 group-hover:text-rose-600 transition-colors">Tech hiring to grow 20% in Q2 2025 as per NASSCOM report</h3>
-                <p className="text-gray-600 mb-4">The growth is driven by investments in AI, digital transformation, and cloud infrastructure projects across major tech hubs.</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">March 15, 2025</span>
-                  <button className="text-rose-600 font-medium text-sm hover:text-rose-700">Read More →</button>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <div className="bg-gradient-to-r from-blue-500 to-cyan-500 h-3"></div>
-              <div className="p-6">
-                <span className="inline-block px-3 py-1 bg-blue-50 text-blue-600 text-xs rounded-full mb-4">Remote Work</span>
-                <h3 className="font-bold text-xl text-gray-800 mb-3 group-hover:text-blue-600 transition-colors">Remote-first companies offering higher salaries to retain talent</h3>
-                <p className="text-gray-600 mb-4">As competition for skilled tech workers intensifies, fully remote companies are increasing compensation packages by 15-20%.</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">March 20, 2025</span>
-                  <button className="text-blue-600 font-medium text-sm hover:text-blue-700">Read More →</button>
-                </div>
-              </div>
-            </div>
+  <div className="flex items-center mb-8">
+    <div className="p-3 bg-rose-100 rounded-2xl mr-4">
+      <Newspaper className="text-rose-600" size={24} />
+    </div>
+    <h2 className="text-2xl font-bold text-gray-800">News & Updates</h2>
+  </div>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {insights.map((item, i) => (
+      <div key={i} className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
+        <div className="bg-gradient-to-r from-rose-500 to-orange-500 h-3"></div>
+        <div className="p-6">
+          <span className="inline-block px-3 py-1 bg-rose-50 text-rose-600 text-xs rounded-full mb-4">
+            {item.tags?.split(',')[0] || 'Update'}
+          </span>
+          <h3 className="font-bold text-xl text-gray-800 mb-3 group-hover:text-rose-600 transition-colors">
+            {item.title}
+          </h3>
+          <p className="text-gray-600 mb-4">{item.content.slice(0, 150)}...</p>
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-gray-500">{new Date(item.published_at).toDateString()}</span>
+            <button className="text-rose-600 font-medium text-sm hover:text-rose-700">Read More →</button>
           </div>
         </div>
+      </div>
+    ))}
+  </div>
+</div>
+
       </div>
     </MainLayout>
   );
