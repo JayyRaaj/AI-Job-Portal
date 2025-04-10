@@ -9,28 +9,68 @@ import {
   ActivitySquare,
   Gauge,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 function AdminDashboard() {
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    employers: 0,
+    jobseekers: 0,
+    reports: 0,
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:5000/api/admin/stats", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setStats(data);
+    };
+    fetchStats();
+  }, []);
+
   return (
     <MainLayout>
       <div className="mb-10">
         <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
           🛠️ Admin Dashboard
         </h1>
-        <p className="text-lg text-gray-500 mt-1">System overview and user management tools.</p>
+        <p className="text-lg text-gray-500 mt-1">
+          System overview and user management tools.
+        </p>
       </div>
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-        <StatCard icon={<Users className="text-indigo-600 w-6 h-6" />} label="Total Users" value="120" />
-        <StatCard icon={<ShieldCheck className="text-blue-600 w-6 h-6" />} label="Employers" value="45" />
-        <StatCard icon={<UserCheck2 className="text-green-600 w-6 h-6" />} label="Jobseekers" value="75" />
-        <StatCard icon={<AlertTriangle className="text-red-600 w-6 h-6" />} label="Reports Filed" value="8" />
+        <StatCard
+          icon={<Users className="text-indigo-600 w-6 h-6" />}
+          label="Total Users"
+          value={stats.totalUsers}
+        />
+        <StatCard
+          icon={<ShieldCheck className="text-blue-600 w-6 h-6" />}
+          label="Employers"
+          value={stats.employers}
+        />
+        <StatCard
+          icon={<UserCheck2 className="text-green-600 w-6 h-6" />}
+          label="Jobseekers"
+          value={stats.jobseekers}
+        />
+        <StatCard
+          icon={<AlertTriangle className="text-red-600 w-6 h-6" />}
+          label="Reports Filed"
+          value={stats.reports}
+        />
       </section>
 
       <section className="mb-12">
         <div className="flex items-center gap-2 mb-4">
           <Settings className="w-5 h-5 text-indigo-500" />
-          <h2 className="text-2xl font-semibold text-gray-800">User Management</h2>
+          <h2 className="text-2xl font-semibold text-gray-800">
+            User Management
+          </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <AdminCard title="Manage Jobseekers" />
@@ -41,12 +81,26 @@ function AdminDashboard() {
       <section>
         <div className="flex items-center gap-2 mb-4">
           <Gauge className="w-5 h-5 text-green-600" />
-          <h2 className="text-2xl font-semibold text-gray-800">System Status</h2>
+          <h2 className="text-2xl font-semibold text-gray-800">
+            System Status
+          </h2>
         </div>
         <ul className="space-y-4">
-          <StatusItem label="Database" status="Online" icon={<Server className="w-4 h-4 text-green-500" />} />
-          <StatusItem label="API Response" status="Healthy" icon={<ActivitySquare className="w-4 h-4 text-blue-500" />} />
-          <StatusItem label="Moderation Queue" status="2 pending" icon={<AlertTriangle className="w-4 h-4 text-yellow-500" />} />
+          <StatusItem
+            label="Database"
+            status="Online"
+            icon={<Server className="w-4 h-4 text-green-500" />}
+          />
+          <StatusItem
+            label="API Response"
+            status="Healthy"
+            icon={<ActivitySquare className="w-4 h-4 text-blue-500" />}
+          />
+          <StatusItem
+            label="Moderation Queue"
+            status="2 pending"
+            icon={<AlertTriangle className="w-4 h-4 text-yellow-500" />}
+          />
         </ul>
       </section>
     </MainLayout>

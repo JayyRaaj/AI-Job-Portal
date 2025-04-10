@@ -1,19 +1,26 @@
 import MainLayout from "../layouts/MainLayout";
 import { UserCircle2, ClipboardList, Star, FileText, CalendarCheck2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 function CandidateScreening() {
-  const candidates = [
-    {
-      name: "John Doe",
-      role: "Frontend Developer",
-      score: "88%",
-    },
-    {
-      name: "Jane Smith",
-      role: "UI/UX Designer",
-      score: "91%",
-    },
-  ];
+
+const [candidates, setCandidates] = useState([]);
+
+useEffect(() => {
+  const employerId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
+
+  const fetchScreenings = async () => {
+    const res = await fetch(`http://localhost:5000/api/screenings/employer/${employerId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    setCandidates(data);
+  };
+
+  fetchScreenings();
+}, []);
+
 
   return (
     <MainLayout>
@@ -39,11 +46,11 @@ function CandidateScreening() {
                 <h2 className="text-xl font-semibold text-gray-800">
                   {candidate.name}
                 </h2>
-                <p className="text-sm text-gray-500">Applied: {candidate.role}</p>
+                <p className="text-sm text-gray-500">Applied:  {candidate.position || "Position"}</p>
               </div>
             </div>
             <p className="text-sm font-medium text-green-600 mb-4">
-              Match Score: {candidate.score}
+              Match Score: {candidate.score}%
             </p>
             <div className="flex justify-between mt-4">
               <button className="inline-flex items-center gap-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition">
@@ -51,8 +58,16 @@ function CandidateScreening() {
                 Schedule Interview
               </button>
               <button className="inline-flex items-center gap-1 px-4 py-2 border text-indigo-600 text-sm font-semibold rounded-xl hover:bg-indigo-50 transition">
-                <FileText className="w-4 h-4" />
-                View Resume
+              <a
+  href={candidate.resume_url}
+  target="_blank"
+  rel="noreferrer"
+  className="inline-flex items-center gap-1 px-4 py-2 border text-indigo-600 text-sm font-semibold rounded-xl hover:bg-indigo-50 transition"
+>
+  <FileText className="w-4 h-4" />
+  View Resume
+</a>
+
               </button>
             </div>
           </div>
