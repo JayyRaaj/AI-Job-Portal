@@ -27,12 +27,13 @@ exports.login = (req, res) => {
       }
   
       const user = results[0];
-      const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '2h' });
+      const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, );
   
       res.status(200).json({
         message: 'Login successful',
         user: { id: user.id, name: user.name, email: user.email, role: user.role },
         token
+        
       });
     });
   };

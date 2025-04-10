@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
-
-
 function Navbar() {
+  const role = sessionStorage.getItem("role");
+
+  if (!role) return null;
+
+
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -22,42 +25,53 @@ function Navbar() {
           : "bg-gradient-to-r from-black to-black"
       }`}
     >
+      
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <Link to={
+  role === "employer" ? "/dashboard/employer" :
+  role === "admin" ? "/dashboard/admin" :
+  "/dashboard/jobseeker"
+} className="text-2xl font-bold text-white flex items-center">
+  <span className="mr-2">⚡</span> SkillSync
+</Link>
+
         {/* Left section */}
-        <div className="flex items-center gap-10">
-          <Link to="/dashboard/jobseeker" className="text-2xl font-bold text-white flex items-center">
-            <span className="mr-2">⚡</span> SkillSync
-          </Link>
-          <div className="hidden md:flex gap-6 text-sm font-medium">
+        {role === "jobseeker" && (
+          <>
             <NavItem to="/job-recommendations" label="Jobs" />
             <NavItem to="/course-recommendations" label="Courses" />
             <NavItem to="/market-insights" label="Insight" />
             <NavItem to="/interview-reminders" label="Remind" />
             <NavItem to="/dashboard/jobseeker" label="Jobseeker" />
-            <NavItem to="/dashboard/employer" label="Employeer" />
-            <NavItem to="/dashboard/admin" label="admin" />
-            <NavItem to="/job-management" label="Mgmt" />
-            <NavItem to="/candidate-screening" label="Screen" />
             <NavItem to="/application-tracking" label="Track" />
             <NavItem to="/resume-upload" label="Upload" />
             <NavItem to="/profile" label="Profile" />
-          </div>
-        </div>
+
+          </>
+        )}
+
+        {role === "employer" && (
+          <>
+            <NavItem to="/dashboard/employer" label="Employer" />
+            <NavItem to="/job-management" label="Mgmt" />
+            <NavItem to="/candidate-screening" label="Screen" />
+          </>
+        )}
+
+        {role === "admin" && <NavItem to="/dashboard/admin" label="Admin" />}
+
 
         {/* Right section */}
         <div className="flex gap-3 text-sm">
-          <Link
-            to="/login"
-            className="px-5 py-2 rounded-xl border border-white/50 text-white hover:bg-white/10 transition-all"
-          >
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className="px-5 py-2 rounded-xl bg-white text-blue-600 font-medium hover:shadow-lg hover:scale-105 transition-all"
-          >
-            Register
-          </Link>
+          
+        <Link
+  to="/login"
+  onClick={() => sessionStorage.clear()}
+  className="px-5 py-2 rounded-xl bg-white text-blue-600 font-medium hover:shadow-lg hover:scale-105 transition-all"
+>
+  Logout
+</Link>
+
         </div>
       </div>
     </nav>
