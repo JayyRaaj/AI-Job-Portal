@@ -3,7 +3,7 @@ import { UserCog, Settings2, ShieldCheck, Save } from "lucide-react";
 
 import { useEffect, useState } from "react";
 
-const userId = 1; // Replace with actual logged-in user ID
+const userId = localStorage.getItem('userId');
 
 const [profile, setProfile] = useState({
   name: "",

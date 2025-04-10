@@ -1,4 +1,6 @@
 import MainLayout from "../layouts/MainLayout";
+import { useEffect, useState } from "react";
+
 import {
   Briefcase,
   CalendarDays,
@@ -8,7 +10,54 @@ import {
   Building2,
 } from "lucide-react";
 
+
+
 function JobseekerDashboard() {
+
+
+const [stats, setStats] = useState({
+  applications: 0,
+  interviews: 0,
+  savedJobs: 0,
+  profileComplete: "0%",
+});
+
+const [recommendedJobs, setRecommendedJobs] = useState([]);
+const [interviews, setInterviews] = useState([]);
+
+const userId = localStorage.getItem('userId');
+const token = localStorage.getItem('token');
+
+useEffect(() => {
+  const fetchData = async () => {
+    const headers = { Authorization: `Bearer ${token}` };
+
+    const [appsRes, recRes, intRes] = await Promise.all([
+      fetch(`http://localhost:5000/api/applications/user/${userId}`, { headers }),
+      fetch(`http://localhost:5000/api/recommendations/jobs/${userId}`, { headers }),
+      fetch(`http://localhost:5000/api/reminders/${userId}`, { headers }),
+    ]);
+
+    const applications = await appsRes.json();
+    const recommendations = await recRes.json();
+    const reminders = await intRes.json();
+
+    setStats({
+      applications: applications.length,
+      interviews: reminders.length,
+      savedJobs: 5, // placeholder
+      profileComplete: "80%" // placeholder
+    });
+
+    setRecommendedJobs(recommendations);
+    setInterviews(reminders);
+  };
+
+  fetchData();
+}, []);
+
+
+
   return (
     <MainLayout>
       <div className="mb-10">
