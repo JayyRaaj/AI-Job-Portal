@@ -1,77 +1,66 @@
 import { useState } from "react";
 import MainLayout from "../layouts/MainLayout";
-import { Search, MapPin, Briefcase, Star, Clock, Filter, ChevronDown } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  Briefcase,
+  Star,
+  Clock,
+  Filter,
+  ChevronDown,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 function JobRecommendations() {
   const [expanded, setExpanded] = useState(null);
-  
-  const jobs = [
-    {
-      id: 1,
-      title: "Frontend Developer",
-      company: "XYZ Corp",
-      location: "Remote",
-      match: 87,
-      salary: "$90,000 - $120,000",
-      posted: "2 days ago",
-      description: "We're looking for a skilled Frontend Developer with experience in React, TypeScript, and responsive design. Join our team to build impactful user experiences.",
-      skills: ["React", "TypeScript", "Tailwind CSS", "Redux"]
-    },
-    {
-      id: 2,
-      title: "Backend Engineer",
-      company: "ABC Ltd",
-      location: "Onsite • New York",
-      match: 92,
-      salary: "$110,000 - $140,000",
-      posted: "Just now",
-      description: "Backend Engineer needed to design and implement scalable APIs and services. You'll work with our cross-functional team to deliver robust solutions.",
-      skills: ["Node.js", "MongoDB", "AWS", "GraphQL"]
-    },
-    {
-      id: 3,
-      title: "Full Stack Developer",
-      company: "Acme Solutions",
-      location: "Hybrid • Boston",
-      match: 95,
-      salary: "$100,000 - $130,000",
-      posted: "1 week ago",
-      description: "Join our growing team as a Full Stack Developer. You'll work on exciting projects across the stack, from user interfaces to database optimizations.",
-      skills: ["JavaScript", "React", "Python", "Django", "PostgreSQL"]
-    },
-    {
-      id: 4,
-      title: "UX/UI Designer",
-      company: "Design Forward",
-      location: "Remote",
-      match: 81,
-      salary: "$85,000 - $115,000",
-      posted: "3 days ago",
-      description: "Creative UX/UI Designer wanted to craft beautiful, intuitive interfaces. You'll collaborate with product and engineering teams throughout the design process.",
-      skills: ["Figma", "UI Design", "User Research", "Prototyping"]
-    }
-  ];
+  const [jobs, setJobs] = useState([]);
 
   const toggleExpand = (id) => {
     setExpanded(expanded === id ? null : id);
   };
+
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      const userId = localStorage.getItem("userId");
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        `http://localhost:5000/api/recommendations/jobs/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+      setJobs(data);
+    };
+
+    fetchRecommendations();
+  }, []);
 
   return (
     <MainLayout>
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
           <h1 className="text-3xl font-bold">Recommended Jobs</h1>
-          <p className="text-gray-500">Showing {jobs.length} jobs matching your profile</p>
+          <p className="text-gray-500">
+            Showing {jobs.length} jobs matching your profile
+          </p>
         </div>
 
         {/* Search and filter bar */}
         <div className="bg-white rounded-2xl shadow-sm p-4 mb-8">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-grow">
-              <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-              <input 
-                type="text" 
-                placeholder="Search job titles, skills, companies..." 
+              <Search
+                className="absolute left-3 top-3 text-gray-400"
+                size={20}
+              />
+              <input
+                type="text"
+                placeholder="Search job titles, skills, companies..."
                 className="w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
@@ -100,11 +89,11 @@ function JobRecommendations() {
         {/* Job cards */}
         <div className="space-y-4">
           {jobs.map((job) => (
-            <div 
+            <div
               key={job.id}
-              className={`bg-white rounded-2xl shadow-sm overflow-hidden transition-all duration-300 ${expanded === job.id ? 'ring-2 ring-primary/30' : 'hover:shadow-md'}`}
+              className={`bg-white rounded-2xl shadow-sm overflow-hidden transition-all duration-300 ${expanded === job.id ? "ring-2 ring-primary/30" : "hover:shadow-md"}`}
             >
-              <div 
+              <div
                 className="p-6 cursor-pointer"
                 onClick={() => toggleExpand(job.id)}
               >
@@ -112,7 +101,9 @@ function JobRecommendations() {
                   <div>
                     <div className="flex items-center gap-2">
                       <h2 className="text-xl font-semibold">{job.title}</h2>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${job.match >= 90 ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${job.match >= 90 ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"}`}
+                      >
                         {job.match}% Match
                       </span>
                     </div>
@@ -124,10 +115,12 @@ function JobRecommendations() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">{job.salary}</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {job.salary}
+                      </p>
                       <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
                         <Clock size={14} />
                         <span>{job.posted}</span>
@@ -137,8 +130,11 @@ function JobRecommendations() {
                 </div>
 
                 <div className="flex flex-wrap gap-2 mt-3">
-                  {job.skills.map((skill, index) => (
-                    <span key={index} className="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                  {(job.skills?.split(",") || []).map((skill, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
+                    >
                       {skill}
                     </span>
                   ))}
