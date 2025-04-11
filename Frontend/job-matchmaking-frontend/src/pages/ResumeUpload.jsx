@@ -101,25 +101,14 @@ function ResumeUpload() {
               {insights.experience} years
             </p>
             <p>
-              <span className="font-semibold text-gray-600">Skills:</span>{" "}
-              {insights.skills.join(", ") || "None found"}
-            </p>
-            <p>
               <span className="font-semibold text-gray-600">Education:</span>{" "}
-              {insights.education.join(", ") || "Not found"}
+              {Array.isArray(insights.education) &&
+              insights.education.length > 0 &&
+              insights.education[0] !== "Not found"
+                ? insights.education.join(", ")
+                : "Not found"}
             </p>
-            <p>
-              <span className="font-semibold text-gray-600">Links:</span>
-            </p>
-            <ul className="list-disc ml-6 text-blue-600">
-              {insights.links.map((link, i) => (
-                <li key={i}>
-                  <a href={link} target="_blank" rel="noreferrer">
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
+           
           </div>
         )}
 
