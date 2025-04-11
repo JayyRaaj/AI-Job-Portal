@@ -7,13 +7,15 @@ function JobManagement() {
   const [form, setForm] = useState({
     title: "",
     location: "",
-    salary_range: "",
+    salary_max: "",
     type: "Full-time",
     description: "",
   });
 
   const employerId = sessionStorage.getItem("userId");
   const token = sessionStorage.getItem("token");
+
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -35,32 +37,48 @@ function JobManagement() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch(`http://localhost:5000/api/jobs`, {
-      method: "POST",
+    const url = editingId
+      ? `http://localhost:5000/api/jobs/${editingId}`
+      : `http://localhost:5000/api/jobs`;
+    const method = editingId ? "PUT" : "POST";
+
+    const res = await fetch(url, {
+      method,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ ...form, employer_id: employerId }),
     });
+
     if (res.ok) {
       setForm({
         title: "",
         location: "",
-        salary_range: "",
+        salary_max: "",
         type: "Full-time",
         description: "",
       });
+      setEditingId(null);
       const updated = await fetch(
         `http://localhost:5000/api/jobs/employer/${employerId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setJobs(await updated.json());
     } else {
-      alert("Failed to post job");
+      alert("Failed to submit job");
     }
+  };
+
+  const handleDelete = async (id) => {
+    const confirm = window.confirm("Are you sure you want to delete this job?");
+    if (!confirm) return;
+
+    const res = await fetch(`http://localhost:5000/api/jobs/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) setJobs(jobs.filter((j) => j.id !== id));
   };
 
   return (
@@ -87,22 +105,28 @@ function JobManagement() {
           className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-8 rounded-3xl border border-gray-100 shadow-xl"
         >
           <input
+            name="title"
             value={form.title}
             type="text"
             placeholder="Job Title"
             className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+            onChange={handleChange}
           />
           <input
+            name="location"
             value={form.location}
             type="text"
             placeholder="Location"
             className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+            onChange={handleChange}
           />
           <input
-            value={form.salary_range}
+            name="salary_max"
+            value={form.salary_max}
             type="text"
             placeholder="Salary Range"
             className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+            onChange={handleChange}
           />
           <select
             name="type"
@@ -126,7 +150,7 @@ function JobManagement() {
               type="submit"
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition"
             >
-              Post Job
+              {editingId ? "Update Job" : "Post Job"}
             </button>
           </div>
         </form>
@@ -150,10 +174,25 @@ function JobManagement() {
                 </p>
               </div>
               <div className="flex gap-3">
-                <button className="inline-flex items-center gap-1 text-sm px-4 py-2 rounded-xl border text-blue-600 hover:bg-blue-50 transition">
+                <button
+                  onClick={() => {
+                    setEditingId(job.id);
+                    setForm({
+                      title: job.title,
+                      location: job.location,
+                      salary_max: job.salary_max,
+                      type: job.type,
+                      description: job.description,
+                    });
+                  }}
+                  className="inline-flex items-center gap-1 text-sm px-4 py-2 rounded-xl border text-blue-600 hover:bg-blue-50 transition"
+                >
                   <Edit className="w-4 h-4" /> Edit
                 </button>
-                <button className="inline-flex items-center gap-1 text-sm px-4 py-2 rounded-xl bg-red-100 text-red-600 hover:bg-red-200 transition">
+                <button
+                  onClick={() => handleDelete(job.id)}
+                  className="inline-flex items-center gap-1 text-sm px-4 py-2 rounded-xl bg-red-100 text-red-600 hover:bg-red-200 transition"
+                >
                   <Trash2 className="w-4 h-4" /> Delete
                 </button>
               </div>

@@ -30,4 +30,26 @@ exports.getEmployerJobs = (req, res) => {
     if (err) return res.status(500).json({ error: 'Failed to fetch employer jobs' });
     res.json(results);
   });
+  
+};
+
+
+exports.deleteJob = (req, res) => {
+  const jobId = req.params.jobId;
+  Job.delete(jobId, (err) => {
+    if (err) return res.status(500).json({ error: 'Delete failed' });
+    res.json({ message: 'Job deleted' });
+  });
+};
+
+exports.updateJob = (req, res) => {
+  const jobId = req.params.jobId;
+  const updates = req.body;
+  Job.update(jobId, updates, (err) => {
+    if (err) return res.status(500).json({ error: 'Update failed' });
+    console.error(err);
+    console.log("Updating job:", jobId, updates);
+
+    res.json({ message: 'Job updated' });
+  });
 };

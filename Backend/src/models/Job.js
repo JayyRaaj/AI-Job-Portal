@@ -1,32 +1,53 @@
-// models/Job.js
 const db = require('../config/db');
 
 const Job = {
-  create: (data, callback) => {
+  create: (data, cb) => {
+    const { title, location, salary_max, type, description, employer_id } = data; // ✅ ADD employer_id
     const sql = `
-      INSERT INTO Jobs 
-        (employer_id, title, description, location, type, salary_min, salary_max, experience_required, education_required, industry, remote, deadline) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO jobs (title, location, salary_max, type, description, employer_id, posted_at)
+      VALUES (?, ?, ?, ?, ?, ?, NOW())
     `;
-    const values = [
-      data.employer_id, data.title, data.description, data.location, data.type,
-      data.salary_min, data.salary_max, data.experience_required, data.education_required,
-      data.industry, data.remote, data.deadline
-    ];
-    db.query(sql, values, callback);
+    db.query(sql, [title, location, salary_max, type, description, employer_id], cb);
+  },
+  
+
+  getAll: (cb) => {
+    db.query('SELECT * FROM jobs', cb);
   },
 
-  getAll: (callback) => {
-    db.query('SELECT * FROM Jobs ORDER BY posted_at DESC', callback);
+  getById: (id, cb) => {
+    db.query('SELECT * FROM jobs WHERE id = ?', [id], cb);
   },
 
-  getById: (id, callback) => {
-    db.query('SELECT * FROM Jobs WHERE id = ?', [id], callback);
+  delete: (id, cb) => {
+    db.query('DELETE FROM jobs WHERE id = ?', [id], cb);
+  },
+  
+
+  getByEmployer: (employerId, cb) => {
+    const sql = `
+      SELECT j.*, 
+        (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) AS applicants_count
+      FROM jobs j
+      WHERE j.employer_id = ?
+      ORDER BY j.posted_at DESC
+    `;
+    db.query(sql, [employerId], cb);
   },
 
-  getByEmployer: (employer_id, callback) => {
-    db.query('SELECT * FROM Jobs WHERE employer_id = ? ORDER BY posted_at DESC', [employer_id], callback);
-  }
+ update: (id, data, cb) => {
+  
+  const { title, location, salary_max, type, description } = data;
+  const sql = `
+    UPDATE jobs SET title = ?, location = ?, salary_max = ?, type = ?, description = ?
+    WHERE id = ?
+  `;
+  db.query(sql, [title, location, salary_max, type, description, id], cb);
+  console.log("Update payload:", data);
+
+},
+
+  
 };
 
 module.exports = Job;
