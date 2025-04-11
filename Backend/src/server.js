@@ -45,5 +45,6 @@ app.use('/api/screenings', candidateScreeningRoutes);
 const jobTrackingRoutes = require('./routes/jobTrackingRoutes');
 app.use('/api/tracking', jobTrackingRoutes);
 
-const adminRoutes = require('./routes/admin');
-app.use('/api/admin', adminRoutes);
+const adminRoutes = require("./routes/admin");
+app.use("/api/admin", adminRoutes);
+

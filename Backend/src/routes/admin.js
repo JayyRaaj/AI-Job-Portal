@@ -1,8 +1,22 @@
-const express = require('express');
+// routes/admin.js
+const express = require("express");
 const router = express.Router();
-const { getAdminStats } = require('../controllers/adminController');
-const { authenticateAdmin } = require('../middleware/auth');
+const db = require("../config/db");
 
-router.get('/stats', authenticateAdmin, getAdminStats);
-
+router.get("/stats", async (req, res) => {
+    try {
+      const [rows] = await db.promise().execute(`
+        SELECT
+          COUNT(*) AS totalUsers,
+          SUM(CASE WHEN role = 'Employer' THEN 1 ELSE 0 END) AS employers,
+          SUM(CASE WHEN role = 'Jobseeker' THEN 1 ELSE 0 END) AS jobseekers
+        FROM users
+      `);
+  
+      res.json({ ...rows[0], reports: 0 });
+    } catch (err) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+  
 module.exports = router;
