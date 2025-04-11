@@ -65,7 +65,7 @@ function Navbar() {
         <div className="flex gap-3 text-sm">
           
         <Link
-  to="/login"
+  to="/"
   onClick={() => sessionStorage.clear()}
   className="px-5 py-2 rounded-xl bg-white text-blue-600 font-medium hover:shadow-lg hover:scale-105 transition-all"
 >

@@ -44,7 +44,6 @@ function JobManagement() {
       body: JSON.stringify({ ...form, employer_id: employerId }),
     });
     if (res.ok) {
-      alert("Job posted");
       setForm({
         title: "",
         location: "",

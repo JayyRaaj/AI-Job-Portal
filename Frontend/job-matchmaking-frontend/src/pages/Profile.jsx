@@ -46,7 +46,7 @@ function Profile() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(profile),
     });
-    if (res.ok) alert("Profile saved");
+    if (res.ok) {}
     else alert("Save failed");
   };
 

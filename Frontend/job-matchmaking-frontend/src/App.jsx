@@ -14,12 +14,29 @@ import InterviewReminders from "./pages/InterviewReminders";
 import MarketInsights from "./pages/MarketInsights";
 import JobManagement from "./pages/JobManagement";
 import CandidateScreening from "./pages/CandidateScreening";
+import { Navigate } from "react-router-dom";
 
 function App() {
+  const isLoggedIn = sessionStorage.getItem("user");
+  const role = sessionStorage.getItem("userRole");
+
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login  />} />
+        <Route
+          path="/"
+          element={
+            role === "jobseeker" ? (
+              <Navigate to="/dashboard/jobseeker" />
+            ) : role === "employer" ? (
+              <Navigate to="/dashboard/employer" />
+            ) : role === "admin" ? (
+              <Navigate to="/dashboard/admin" />
+            ) : (
+              <Home />
+            )
+          }
+        />{" "}
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard/jobseeker" element={<JobseekerDashboard />} />
@@ -28,7 +45,10 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/resume-upload" element={<ResumeUpload />} />
         <Route path="/job-recommendations" element={<JobRecommendations />} />
-        <Route path="/course-recommendations" element={<CourseRecommendations />} />
+        <Route
+          path="/course-recommendations"
+          element={<CourseRecommendations />}
+        />
         <Route path="/application-tracking" element={<ApplicationTracking />} />
         <Route path="/interview-reminders" element={<InterviewReminders />} />
         <Route path="/market-insights" element={<MarketInsights />} />

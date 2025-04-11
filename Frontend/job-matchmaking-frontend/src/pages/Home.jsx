@@ -10,27 +10,78 @@ import {
   Star,
 } from "lucide-react";
 
+
 import job from "../assets/images/Job.png";
 
 import { ChevronRight, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 function Home() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [featuredJobs, setFeaturedJobs] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchFeatured = async () => {
       const res = await fetch("http://localhost:5000/api/jobs");
       const data = await res.json();
-      setFeaturedJobs(data.slice(0, 6)); // show first 6
+      setFeaturedJobs(data.slice(0, 6));
     };
     fetchFeatured();
   }, []);
 
+  const scrollToExplore = () => {
+    const target = document.getElementById("explore-section");
+    if (!target) return;
+  
+    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
+    const startPosition = window.pageYOffset;
+    const distance = targetPosition - startPosition;
+    const duration = 1000;
+    let startTime = null;
+  
+    const easeInOutQuad = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
+  
+    const animation = (currentTime) => {
+      if (!startTime) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const run = easeInOutQuad(timeElapsed / duration) * distance + startPosition;
+      window.scrollTo(0, run);
+      if (timeElapsed < duration) requestAnimationFrame(animation);
+    };
+  
+    requestAnimationFrame(animation);
+  };
+  
+  const scrollToJobs = () => {
+    const target = document.getElementById("jobs-section");
+    if (!target) return;
+  
+    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
+    const startPosition = window.pageYOffset;
+    const distance = targetPosition - startPosition;
+    const duration = 1000;
+    let startTime = null;
+  
+    const easeInOutQuad = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
+  
+    const animation = (currentTime) => {
+      if (!startTime) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const run = easeInOutQuad(timeElapsed / duration) * distance + startPosition;
+      window.scrollTo(0, run);
+      if (timeElapsed < duration) requestAnimationFrame(animation);
+    };
+  
+    requestAnimationFrame(animation);
+  };
+  
+
   return (
-    <MainLayout>
+    <div>
       <section className="bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white min-h-screen relative overflow-hidden">
         {/* Abstract background elements */}
         <div className="absolute -top-20 -right-20 w-64 h-64 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full blur-3xl opacity-20"></div>
@@ -56,15 +107,19 @@ function Home() {
               </p>
 
               <div className="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
-                <button className="flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 text-black font-medium px-8 py-4 rounded-xl hover:from-amber-400 hover:to-amber-500 transition duration-300 shadow-lg shadow-amber-500/20 group">
+                <button       onClick={() => navigate("/login")}
+ className="bounce-slow flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 text-black font-medium px-8 py-4 rounded-xl hover:from-amber-400 hover:to-amber-500 transition duration-300 shadow-lg shadow-amber-500/20 group">
                   <span>Join Now</span>
                   <ChevronRight
                     size={18}
                     className="transition-transform group-hover:translate-x-1"
                   />
                 </button>
-                <button className="flex items-center justify-center space-x-2 bg-white/5 backdrop-blur-sm border border-white/10 text-white px-8 py-4 rounded-xl hover:bg-white/10 transition duration-300">
-                  <span>Explore Program</span>
+                <button
+                 onClick={scrollToExplore} 
+                  className="flex items-center justify-center space-x-2 bg-white/5 backdrop-blur-sm border border-white/10 text-white px-8 py-4 rounded-xl hover:bg-white/10 transition duration-300"
+                >
+                  <span>Explore Now</span>
                 </button>
               </div>
 
@@ -74,7 +129,6 @@ function Home() {
                   <div className="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-green-500 border-2 border-gray-900"></div>
                   <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-purple-500 border-2 border-gray-900"></div>
                 </div>
-                <span className="text-sm">Joined by 500+ graduates</span>
               </div>
             </div>
 
@@ -107,18 +161,20 @@ function Home() {
       </section>
 
       {/* Featured Jobs Section */}
-      <section className="py-16 bg-gray-50">
+      <section id="explore-section" className="py-16 bg-gray-50">
         <div className="w-full px-4">
           <div className="flex justify-between items-center mb-10">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
               Featured Jobs
             </h2>
-            <a
-              href="/jobs"
-              className="text-blue-600 hover:text-blue-700 inline-flex items-center font-medium"
-            >
-              View all jobs <ArrowRight size={16} className="ml-1" />
-            </a>
+            <span
+  onClick={scrollToJobs}
+  className="cursor-pointer text-blue-600 hover:text-blue-700 inline-flex items-center font-medium"
+>
+  View all jobs <ArrowRight size={16} className="ml-1" />
+</span>
+
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -131,7 +187,9 @@ function Home() {
                   <div className="flex items-start mb-4">
                     <div className="h-12 w-12 rounded-md bg-gray-100 flex items-center justify-center overflow-hidden mr-4 flex-shrink-0">
                       <img
-                        src={job.logo || "https://placehold.co/600x400/000000/FFF"}
+                        src={
+                          job.logo || "https://placehold.co/600x400/000000/FFF"
+                        }
                         alt={job.company || "Company"}
                         className="w-full h-full object-cover"
                       />
@@ -158,13 +216,12 @@ function Home() {
                       {job.salary_min && job.salary_max
                         ? `$${job.salary_min} - $${job.salary_max}     `
                         : "N/A"}
-
                     </span>
                     <span className="text-xs text-gray-500">{job.posted}</span>
                   </div>
 
                   <div className="flex flex-wrap gap-2 mb-4">
-                  {(job.tags?.split(',') || []).map((tag, index) => (
+                    {(job.tags?.split(",") || []).map((tag, index) => (
                       <span
                         key={index}
                         className="inline-block bg-blue-50 text-blue-600 text-xs px-2 py-1 rounded-full"
@@ -174,7 +231,7 @@ function Home() {
                     ))}
                   </div>
 
-                  <button className="w-full py-2 bg-white border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors duration-200 font-medium">
+                  <button onClick={scrollToJobs} className="w-full py-2 bg-white border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors duration-200 font-medium">
                     Apply Now
                   </button>
                 </div>
@@ -236,7 +293,7 @@ function Home() {
       </section>
 
       {/* Categories Section */}
-      <section className="py-16 bg-gray-50">
+      <section id="jobs-section" className="py-16 bg-gray-50">
         <div className="w-full px-4">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-12">
             Browse Jobs by Category
@@ -278,16 +335,16 @@ function Home() {
             employers.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button className="px-8 py-3 bg-white text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition duration-200">
-              Find Jobs
+            <button  onClick={() => navigate("/register")} className=" bounce-slow px-8 py-3 bg-white text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition duration-200">
+              Sign Up
             </button>
-            <button className="px-8 py-3 bg-transparent border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:bg-opacity-10 transition duration-200">
-              Post a Job
+            <button onClick={() => navigate("/login")} className=" px-8 py-3 bg-transparent border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:bg-opacity-10 transition duration-200">
+              Sign In
             </button>
           </div>
         </div>
       </section>
-    </MainLayout>
+    </div>
   );
 }
 
