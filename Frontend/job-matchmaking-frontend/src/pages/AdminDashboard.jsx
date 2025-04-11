@@ -30,13 +30,42 @@ function AdminDashboard() {
     };
     fetchStats();
   }, []);
-  
+  const [jobseekers, setJobseekers] = useState([]);
+const [employers, setEmployers] = useState([]);
+useEffect(() => {
+  const token = sessionStorage.getItem("token");
+
+  const fetchStats = async () => {
+    const res = await fetch("http://localhost:5000/api/admin/stats", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    setStats(data);
+  };
+
+  const fetchUsers = async () => {
+    const res1 = await fetch("http://localhost:5000/api/admin/jobseekers", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const res2 = await fetch("http://localhost:5000/api/admin/employers", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setJobseekers(await res1.json());
+    setEmployers(await res2.json());
+  };
+
+  fetchStats();
+  fetchUsers();
+}, []);
+
 
   return (
+
+    
     <MainLayout>
       <div className="mb-10">
         <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
-          🛠️ Admin Dashboard
+           Admin Dashboard
         </h1>
         <p className="text-lg text-gray-500 mt-1">
           System overview and user management tools.
@@ -74,8 +103,9 @@ function AdminDashboard() {
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <AdminCard title="Manage Jobseekers" />
-          <AdminCard title="Manage Employers" />
+        <AdminCard title="Manage Jobseekers" users={jobseekers} />
+<AdminCard title="Manage Employers" users={employers} />
+
         </div>
       </section>
 
@@ -116,15 +146,46 @@ const StatCard = ({ icon, label, value }) => (
   </div>
 );
 
-const AdminCard = ({ title }) => (
-  <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-md hover:shadow-lg transition">
-    <h3 className="text-lg font-semibold text-gray-800 mb-1">{title}</h3>
-    <p className="text-sm text-gray-500">Click to manage and review users.</p>
-    <button className="mt-4 inline-block text-sm text-indigo-600 font-medium hover:underline">
-      Go to Panel
-    </button>
-  </div>
-);
+const AdminCard = ({ title, users = [] }) => {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-md hover:shadow-lg transition">
+      <h3 className="text-lg font-semibold text-gray-800 mb-1">{title}</h3>
+      <p className="text-sm text-gray-500">Click to manage and review users.</p>
+      <button
+        onClick={() => setOpen(!open)}
+        className="mt-4 inline-block text-sm text-indigo-600 font-medium hover:underline"
+      >
+        {open ? "Hide Panel" : "Go to Panel"}
+      </button>
+
+      {open && (
+        <ul className="mt-4 list-disc list-inside text-sm text-gray-700 space-y-2 max-h-48 overflow-y-auto">
+          {users.map((u, i) => (
+            <li key={i}>
+              <div className="flex flex-col">
+                <span className="font-medium">{u.name}</span>
+                {u.jobs_posted !== undefined && (
+                  <span className="text-xs text-gray-500">
+                    Jobs Posted: {u.jobs_posted}
+                  </span>
+                )}
+                {u.applications_count !== undefined && (
+                  <span className="text-xs text-gray-500">
+                    Applications: {u.applications_count}
+                  </span>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+
 
 const StatusItem = ({ label, status, icon }) => (
   <li className="bg-white p-5 rounded-3xl border border-gray-100 shadow-md flex items-center gap-3 hover:shadow-lg transition">
