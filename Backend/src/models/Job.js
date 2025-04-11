@@ -46,8 +46,19 @@ const Job = {
   console.log("Update payload:", data);
 
 },
+getApplicantsByJob: (jobId, cb) => {
+  console.log("Querying applicants for job:", jobId); // 👈 add this
+  const sql = `
+    SELECT u.name, u.email, p.skills, p.linkedin
+    FROM applications a
+    JOIN users u ON a.user_id = u.id
+    LEFT JOIN profiles p ON a.user_id = p.user_id
+    WHERE a.job_id = ?
+  `;
+  db.query(sql, [jobId], cb);
+},
 
-  
 };
+
 
 module.exports = Job;

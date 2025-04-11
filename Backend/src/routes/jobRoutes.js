@@ -9,6 +9,7 @@ router.get('/:jobId', jobController.getJob);
 router.get('/employer/:employerId', jobController.getEmployerJobs);
 router.delete('/:jobId', jobController.deleteJob);
 router.put('/:jobId', jobController.updateJob);
+router.get('/:jobId/applicants', jobController.getJobApplicants);
 
 
 module.exports = router;

@@ -53,3 +53,19 @@ exports.updateJob = (req, res) => {
     res.json({ message: 'Job updated' });
   });
 };
+
+exports.getJobApplicants = (req, res) => {
+  const jobId = req.params.jobId;
+  console.log("Fetching applicants for jobId:", jobId); // 👈 add this
+  Job.getApplicantsByJob(jobId, (err, results) => {
+    if (err) {
+      console.error("DB Error:", err); // 👈 log the error
+      return res.status(500).json({ error: 'Failed to fetch applicants' });
+    }
+    res.json(results);
+  });
+};
+
+
+
+

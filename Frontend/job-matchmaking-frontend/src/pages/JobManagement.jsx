@@ -1,6 +1,7 @@
 import MainLayout from "../layouts/MainLayout";
 import { Briefcase, PlusCircle, Edit, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+
 
 function JobManagement() {
   const [jobs, setJobs] = useState([]);
@@ -14,6 +15,11 @@ function JobManagement() {
 
   const employerId = sessionStorage.getItem("userId");
   const token = sessionStorage.getItem("token");
+  const [expandedJob, setExpandedJob] = useState(null);
+const [applicants, setApplicants] = useState({});
+const formRef = useRef(null);
+
+
 
   const [editingId, setEditingId] = useState(null);
 
@@ -93,7 +99,7 @@ function JobManagement() {
         </p>
       </div>
 
-      <section className="mb-12">
+      <section className="mb-12" ref={formRef}>
         <div className="flex items-center gap-2 mb-4">
           <PlusCircle className="w-5 h-5 text-green-600" />
           <h2 className="text-2xl font-semibold text-gray-800">
@@ -162,41 +168,99 @@ function JobManagement() {
         </h2>
         <div className="space-y-5">
           {jobs.map((job, i) => (
-            <div
-              key={i}
-              className="bg-white p-6 rounded-3xl border border-gray-100 shadow-lg hover:shadow-xl transition duration-300 flex justify-between items-center"
-            >
-              <div>
-                <h3 className="text-lg font-bold text-gray-900">{job.title}</h3>
-                <p className="text-sm text-gray-500">
-                  {job.applicants_count || 0} Applicants • Posted on{" "}
-                  {new Date(job.posted_at).toDateString()}
-                </p>
-              </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setEditingId(job.id);
-                    setForm({
-                      title: job.title,
-                      location: job.location,
-                      salary_max: job.salary_max,
-                      type: job.type,
-                      description: job.description,
-                    });
-                  }}
-                  className="inline-flex items-center gap-1 text-sm px-4 py-2 rounded-xl border text-blue-600 hover:bg-blue-50 transition"
-                >
-                  <Edit className="w-4 h-4" /> Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(job.id)}
-                  className="inline-flex items-center gap-1 text-sm px-4 py-2 rounded-xl bg-red-100 text-red-600 hover:bg-red-200 transition"
-                >
-                  <Trash2 className="w-4 h-4" /> Delete
-                </button>
-              </div>
-            </div>
+           <div
+           key={i}
+           className="bg-white p-6 rounded-3xl border border-gray-100 shadow-lg hover:shadow-xl transition duration-300"
+         >
+           <div className="flex justify-between items-center">
+             <div>
+               <h3 className="text-lg font-bold text-gray-900">{job.title}</h3>
+               <p className="text-sm text-gray-500">
+                 {job.applicants_count || 0} Applicants • Posted on{" "}
+                 {new Date(job.posted_at).toDateString()}
+               </p>
+             </div>
+             <div className="flex gap-3">
+               <button
+                 onClick={() => {
+                  setEditingId(job.id);
+                  setForm({
+                    title: job.title,
+                    location: job.location,
+                    salary_max: job.salary_max,
+                    type: job.type,
+                    description: job.description,
+                  });
+                  formRef.current?.scrollIntoView({ behavior: "smooth" });
+                }}
+                
+                 className="inline-flex items-center gap-1 text-sm px-4 py-2 rounded-xl border text-blue-600 hover:bg-blue-50 transition"
+               >
+                 <Edit className="w-4 h-4" /> Edit
+               </button>
+               <button
+                 onClick={() => handleDelete(job.id)}
+                 className="inline-flex items-center gap-1 text-sm px-4 py-2 rounded-xl bg-red-100 text-red-600 hover:bg-red-200 transition"
+               >
+                 <Trash2 className="w-4 h-4" /> Delete
+               </button>
+             </div>
+           </div>
+         
+           <div className="mt-4">
+             <button
+               className="text-blue-600 underline text-sm"
+               onClick={async () => {
+                 if (expandedJob === job.id) {
+                   setExpandedJob(null);
+                   return;
+                 }
+                 const res = await fetch(`http://localhost:5000/api/jobs/${job.id}/applicants`, {
+                   headers: { Authorization: `Bearer ${token}` },
+                 });
+                 const data = await res.json();
+                 setApplicants((prev) => ({ ...prev, [job.id]: data }));
+                 setExpandedJob(job.id);
+               }}
+             >
+               {expandedJob === job.id ? "Hide Applicants" : "View Applicants"}
+             </button>
+         
+             {expandedJob === job.id && (
+               <div className="mt-3 space-y-2">
+                 {applicants[job.id]?.length > 0 ? (
+                   applicants[job.id].map((app, idx) => (
+                     <div key={idx} className="border rounded-xl p-3 bg-gray-50">
+                       <p className="font-semibold">{app.name}</p>
+                       <p className="text-sm text-gray-600">{app.email}</p>
+                       <p className="text-sm text-gray-600 italic">
+                         Skills: {app.skills || "N/A"}
+                       </p>
+                       <p className="text-sm">
+                         LinkedIn:{" "}
+                         {app.linkedin ? (
+                           <a
+                             href={app.linkedin}
+                             className="text-blue-500 underline"
+                             target="_blank"
+                             rel="noopener noreferrer"
+                           >
+                             {app.linkedin}
+                           </a>
+                         ) : (
+                           "N/A"
+                         )}
+                       </p>
+                     </div>
+                   ))
+                 ) : (
+                   <p className="text-sm italic text-gray-500">No applicants yet.</p>
+                 )}
+               </div>
+             )}
+           </div>
+         </div>
+         
           ))}
         </div>
       </section>
