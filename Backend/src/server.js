@@ -49,3 +49,5 @@ app.use("/api/admin", adminRoutes);
 const interviewReminderRoutes = require('./routes/interviewReminderRoutes');
 app.use('/api/interviewreminders', interviewReminderRoutes);
 
+const reminderRoutes = require("./routes/reminderRoutes");
+app.use("/api/reminders", reminderRoutes);

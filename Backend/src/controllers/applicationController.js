@@ -31,3 +31,21 @@ exports.updateApplicationStatus = (req, res) => {
     res.json({ message: 'Status updated' });
   });
 };
+
+exports.getEmployerApplications = (req, res) => {
+  const employerId = req.params.employerId;
+  const sql = `
+    SELECT a.id, a.job_id, a.user_id, a.status, u.name AS applicant_name, j.title AS job_title
+    FROM applications a
+    JOIN users u ON a.user_id = u.id
+    JOIN jobs j ON a.job_id = j.id
+    WHERE j.employer_id = ?
+    ORDER BY a.applied_at DESC
+  `;
+  const db = require('../config/db');
+  db.query(sql, [employerId], (err, results) => {
+    if (err) return res.status(500).json({ error: 'Fetch failed' });
+    res.json(results);
+  });
+};
+
