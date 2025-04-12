@@ -1,30 +1,121 @@
-// models/CandidateScreening.js
 const db = require('../config/db');
 
-const CandidateScreening = {
-  submit: (data, callback) => {
-    const sql = `
-      INSERT INTO CandidateScreenings 
-        (application_id, score, remarks, evaluation_criteria, screened_by, screened_at)
-      VALUES (?, ?, ?, ?, ?, NOW())
-    `;
-    db.query(sql, [
-      data.application_id,
-      data.score,
-      data.remarks,
-      data.evaluation_criteria,
-      data.screened_by
-    ], callback);
-  },
-
-  getByApplication: (application_id, callback) => {
-    db.query(`
-      SELECT cs.*, u.name AS screened_by_name
-      FROM CandidateScreenings cs
-      JOIN Users u ON cs.screened_by = u.id
-      WHERE cs.application_id = ?
-    `, [application_id], callback);
+class CandidateScreening {
+  // Get all screenings
+  static getAllScreenings() {
+    return new Promise((resolve, reject) => {
+      const query = `
+        SELECT * FROM candidatescreenings
+        ORDER BY screened_at DESC
+      `;
+      
+      db.query(query, (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve(results);
+      });
+    });
   }
-};
+
+  // Get screening by ID
+  static getScreeningById(id) {
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT * FROM candidatescreenings WHERE id = ?';
+      
+      db.query(query, [id], (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        if (results.length === 0) {
+          return resolve(null);
+        }
+        resolve(results[0]);
+      });
+    });
+  }
+
+  // Get screenings by employer ID
+  static getScreeningsByEmployer(employerId) {
+    return new Promise((resolve, reject) => {
+      const query = `
+        SELECT * FROM candidatescreenings
+        WHERE screened_by = ?
+        ORDER BY screened_at DESC
+      `;
+      
+      db.query(query, [employerId], (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve(results);
+      });
+    });
+  }
+
+  // Create new screening
+  static createScreening(screeningData) {
+    return new Promise((resolve, reject) => {
+      const query = `
+        INSERT INTO candidatescreenings
+        (application_id, score, remarks, evaluation_criteria, screened_by)
+        VALUES (?, ?, ?, ?, ?)
+      `;
+      
+      const { application_id, score, remarks, evaluation_criteria, screened_by } = screeningData;
+      
+      db.query(
+        query, 
+        [application_id, score, remarks, evaluation_criteria, screened_by],
+        (err, result) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve({ id: result.insertId, ...screeningData });
+        }
+      );
+    });
+  }
+
+  // Update screening feedback
+  static updateFeedback(id, feedbackData) {
+    return new Promise((resolve, reject) => {
+      const query = `
+        UPDATE candidatescreenings
+        SET remarks = ?, score = ?
+        WHERE id = ?
+      `;
+      
+      const { remarks, score } = feedbackData;
+      
+      db.query(query, [remarks, score, id], (err, result) => {
+        if (err) {
+          return reject(err);
+        }
+        if (result.affectedRows === 0) {
+          return resolve(null);
+        }
+        resolve({ id, ...feedbackData });
+      });
+    });
+  }
+
+  // Delete screening
+  static deleteScreening(id) {
+    return new Promise((resolve, reject) => {
+      const query = 'DELETE FROM candidatescreenings WHERE id = ?';
+      
+      db.query(query, [id], (err, result) => {
+        if (err) {
+          return reject(err);
+        }
+        if (result.affectedRows === 0) {
+          return resolve(false);
+        }
+        resolve(true);
+      });
+    });
+  }
+}
 
 module.exports = CandidateScreening;
