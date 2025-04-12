@@ -40,7 +40,7 @@ function Register() {
     <div>
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" 
            style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+            backgroundImage: "url('https://images.pexels.com/photos/1525041/pexels-photo-1525041.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')",
             backgroundSize: "cover",
              backgroundPosition: "center",
              backgroundBlendMode: "overlay",
