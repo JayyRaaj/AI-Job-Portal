@@ -33,8 +33,6 @@ app.use('/api/applications', applicationRoutes);
 const recommendationRoutes = require('./routes/recommendationRoutes');
 app.use('/api/recommendations', recommendationRoutes);
 
-const interviewReminderRoutes = require('./routes/interviewReminderRoutes');
-app.use('/api/reminders', interviewReminderRoutes);
 
 const marketInsightRoutes = require('./routes/marketInsightRoutes');
 app.use('/api/insights', marketInsightRoutes);
@@ -48,4 +46,6 @@ app.use('/api/tracking', jobTrackingRoutes);
 const adminRoutes = require("./routes/admin");
 app.use("/api/admin", adminRoutes);
 
+const interviewReminderRoutes = require('./routes/interviewReminderRoutes');
+app.use('/api/interviewreminders', interviewReminderRoutes);
 
