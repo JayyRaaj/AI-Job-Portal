@@ -22,3 +22,19 @@ exports.getInsight = (req, res) => {
     res.json(result[0]);
   });
 };
+
+exports.getInsights = (req, res) => {
+  const { type } = req.query;
+  if (type) {
+    MarketInsight.getByType(type, (err, results) => {
+      if (err) return res.status(500).json({ error: 'Failed to fetch insights' });
+      res.json(results);
+    });
+  } else {
+    MarketInsight.getAll((err, results) => {
+      if (err) return res.status(500).json({ error: 'Failed to fetch insights' });
+      res.json(results);
+    });
+  }
+};
+

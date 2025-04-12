@@ -23,7 +23,13 @@ const MarketInsight = {
 
   getById: (id, callback) => {
     db.query('SELECT * FROM MarketInsights WHERE id = ?', [id], callback);
+  },
+
+  getByType: (type, callback) => {
+    db.query('SELECT * FROM MarketInsights WHERE type = ? ORDER BY published_at DESC', [type], callback);
   }
+  
+  
 };
 
 module.exports = MarketInsight;
