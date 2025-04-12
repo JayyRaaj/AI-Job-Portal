@@ -23,6 +23,8 @@ function EmployerDashboard() {
 
   const employerId = sessionStorage.getItem("userId");
   const token = sessionStorage.getItem("token");
+  const [selectedApp, setSelectedApp] = useState(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,6 +45,7 @@ function EmployerDashboard() {
       const jobs = await jobsRes.json();
       const apps = await appsRes.json();
       const reminders = await remindersRes.json();
+
 
       setStats({
         active: jobs.length,
@@ -102,10 +105,12 @@ function EmployerDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {recentApps.map((app, i) => (
             <ApplicationCard
-              key={i}
-              name={app.applicant_name}
-              position={app.job_title}
-            />
+            key={i}
+            name={app.applicant_name}
+            position={app.job_title}
+            onView={() => setSelectedApp(app)}
+          />
+          
           ))}
         </div>
       </section>
@@ -131,6 +136,25 @@ function EmployerDashboard() {
           ))}
         </ul>
       </section>
+      {selectedApp && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl">
+      <h2 className="text-xl font-bold mb-4">Application Details</h2>
+      <p><strong>Applicant:</strong> {selectedApp.applicant_name}</p>
+      <p><strong>Job Title:</strong> {selectedApp.job_title}</p>
+      <p><strong>Status:</strong> {selectedApp.status}</p>
+      <div className="text-right mt-6">
+        <button
+          onClick={() => setSelectedApp(null)}
+          className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </MainLayout>
   );
 }
@@ -143,15 +167,20 @@ const StatCard = ({ icon, label, value }) => (
   </div>
 );
 
-const ApplicationCard = ({ name, position }) => (
+const ApplicationCard = ({ name, position, onView }) => (
   <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-md hover:shadow-lg transition">
     <h3 className="text-lg font-semibold text-gray-800 mb-1">{name}</h3>
     <p className="text-sm text-gray-500">{position}</p>
-    <button className="mt-4 inline-block text-sm text-indigo-600 font-medium hover:underline">
+    <button
+      onClick={onView}
+      className="mt-4 inline-block text-sm text-indigo-600 font-medium hover:underline"
+    >
       View Application
     </button>
   </div>
+  
 );
+
 
 const InterviewItem = ({ name, date, time }) => (
   <li className="bg-white p-5 rounded-3xl border border-gray-100 shadow-md hover:shadow-lg transition">
