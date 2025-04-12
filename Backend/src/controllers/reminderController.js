@@ -16,3 +16,20 @@ exports.getByEmployer = (req, res) => {
     res.json(results);
   });
 };
+
+exports.getByJobseeker = (req, res) => {
+    const userId = req.params.id;
+    const query = `
+      SELECT ir.interview_date, j.title
+      FROM interviewreminders ir
+      JOIN applications a ON ir.application_id = a.id
+      JOIN jobs j ON a.job_id = j.id
+      WHERE a.user_id = ?
+      ORDER BY ir.interview_date DESC
+    `;
+    db.query(query, [userId], (err, results) => {
+      if (err) return res.status(500).json({ error: "DB error" });
+      res.json(results);
+    });
+  };
+  

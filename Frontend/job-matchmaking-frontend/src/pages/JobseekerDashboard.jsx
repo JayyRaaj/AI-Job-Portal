@@ -29,9 +29,8 @@ function JobseekerDashboard() {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [appsRes, recRes, intRes] = await Promise.all([
-        fetch(`http://localhost:5000/api/applications/user/${userId}`, {
-          headers,
-        }),
+        fetch(`http://localhost:5000/api/reminders/jobseeker/${userId}`, { headers }),
+
         fetch(`http://localhost:5000/api/recommendations/jobs/`, {
           headers,
         }),
