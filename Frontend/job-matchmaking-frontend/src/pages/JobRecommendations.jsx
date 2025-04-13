@@ -123,11 +123,7 @@ function JobRecommendations() {
                   <div>
                     <div className="flex items-center gap-2">
                       <h2 className="text-xl font-semibold">{job.title}</h2>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${job.match >= 90 ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"}`}
-                      >
-                        {job.match}% Match
-                      </span>
+                      
                     </div>
                     <div className="flex items-center gap-4 mt-1 text-gray-600">
                       <p className="text-sm font-medium">{job.company}</p>
@@ -182,13 +178,8 @@ function JobRecommendations() {
                       <Briefcase size={16} />
                       Apply Now
                     </button>
-                    <button className="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-100 transition flex items-center gap-2">
-                      <Star size={16} />
-                      Save Job
-                    </button>
-                    <button className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-100 transition">
-                      View Details
-                    </button>
+                    
+                   
                   </div>
                 </div>
               )}

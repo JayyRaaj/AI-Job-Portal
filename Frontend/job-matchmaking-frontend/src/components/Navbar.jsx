@@ -44,7 +44,6 @@ function Navbar() {
             <NavItem to="/job-recommendations" label="Jobs" />
             <NavItem to="/market-insights" label="Insight" />
             <NavItem to="/interview-reminders" label="Remind" />
-            <NavItem to="/dashboard/jobseeker" label="Jobseeker" />
             <NavItem to="/application-tracking" label="Track" />
             <NavItem to="/resume-upload" label="Upload" />
             <NavItem to="/profile" label="Profile" />

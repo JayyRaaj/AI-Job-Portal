@@ -158,9 +158,7 @@ function MarketInsights() {
                     <span className="text-sm text-gray-500">
                       {new Date(item.published_at).toDateString()}
                     </span>
-                    <button className="text-rose-600 font-medium text-sm hover:text-rose-700">
-                      Read More →
-                    </button>
+                    
                   </div>
                 </div>
               </div>

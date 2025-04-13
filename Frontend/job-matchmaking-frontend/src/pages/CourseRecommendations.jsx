@@ -77,18 +77,19 @@ const ChatGPTUI = () => {
 
   return (
     <MainLayout>
-      <div className="flex flex-col h-screen bg-white text-gray-800">
-        {/* Header - fixed at top */}
+<div className="flex flex-col max-h-screen overflow-hidden bg-white text-gray-800">
+{/* Header - fixed at top */}
         <div className="sticky top-0 z-10 border-b border-gray-200 py-3 px-4 bg-white">
           <h1 className="text-xl font-semibold">Skill Bot</h1>
         </div>
         
         {/* Chat messages container - scrollable area */}
         <div 
-          ref={chatContainerRef}
-          className="flex-1 overflow-y-auto px-4 py-2 pb-24"
-        >
-          <div className="max-w-3xl mx-auto space-y-4">
+  ref={chatContainerRef}
+  className="flex-1 overflow-y-auto px-4 py-2 pb-24 max-h-full"
+>
+
+<div className="w-full space-y-4">
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -122,8 +123,8 @@ const ChatGPTUI = () => {
 
         {/* Fixed input area at bottom */}
         <div className="fixed bottom-0 left-0 right-0 border-t border-gray-200 bg-white p-3 shadow-md">
-          <form onSubmit={handleSubmit} className="max-w-3xl mx-auto flex items-center relative">
-            <input
+        <form onSubmit={handleSubmit} className="w-full flex items-center relative">
+        <input
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
