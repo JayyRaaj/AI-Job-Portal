@@ -30,8 +30,9 @@ exports.getScreeningById = async (req, res) => {
 // Get screenings by employer ID
 exports.getScreeningsByEmployer = async (req, res) => {
   try {
-    const screenings = await CandidateScreening.getScreeningsByEmployer(req.params.employerId);
-    res.status(200).json(screenings);
+    const employerId = req.params.employerId;
+    const screenings = await CandidateScreening.getScreeningsByEmployer(employerId);
+        res.status(200).json(screenings);
   } catch (error) {
     console.error('Error fetching screenings by employer:', error);
     res.status(500).json({ message: 'Failed to fetch screenings', error: error.message });

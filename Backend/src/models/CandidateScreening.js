@@ -39,19 +39,21 @@ class CandidateScreening {
   static getScreeningsByEmployer(employerId) {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT * FROM candidatescreenings
-        WHERE screened_by = ?
-        ORDER BY screened_at DESC
+        SELECT cs.*
+        FROM candidatescreenings cs
+        JOIN applications a ON cs.application_id = a.id
+        JOIN jobs j ON a.job_id = j.id
+        WHERE j.employer_id = ?
+        ORDER BY cs.screened_at DESC
       `;
       
       db.query(query, [employerId], (err, results) => {
-        if (err) {
-          return reject(err);
-        }
+        if (err) return reject(err);
         resolve(results);
       });
     });
   }
+  
 
   // Create new screening
   static createScreening(screeningData) {

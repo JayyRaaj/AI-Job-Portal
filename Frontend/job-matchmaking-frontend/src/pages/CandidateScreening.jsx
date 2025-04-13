@@ -17,7 +17,6 @@ function CandidateScreening() {
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
-
   const getDefaultPlatformInfo = () => {
     const platforms = [
       { name: "Zoom", link: "https://zoom.us/j/default" },
@@ -29,20 +28,20 @@ function CandidateScreening() {
 
   const formatDateTime = (date) =>
     date.toISOString().slice(0, 19).replace("T", " ");
-  
+
   const handleScheduleInterview = async (candidate) => {
     const token = sessionStorage.getItem("token");
     const interviewDate = new Date();
     const reminderTime = new Date(interviewDate);
     reminderTime.setDate(interviewDate.getDate() + 1);
     const { name: platform, link: meeting_link } = getDefaultPlatformInfo();
-  
+
     try {
       const res = await fetch(`http://localhost:5000/api/interviewreminders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           application_id: candidate.application_id,
@@ -53,14 +52,13 @@ function CandidateScreening() {
           sent: 0,
         }),
       });
-  
+
       if (!res.ok) throw new Error("Failed to schedule interview");
       alert("Interview scheduled.");
     } catch (err) {
       console.error("Error:", err);
     }
   };
-  
 
   useEffect(() => {
     const employerId = sessionStorage.getItem("userId");
@@ -69,7 +67,7 @@ function CandidateScreening() {
     const fetchScreenings = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch(`http://localhost:5000/api/screenings`, {
+        const res = await fetch(`http://localhost:5000/api/screenings/employer/${employerId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -225,37 +223,51 @@ function CandidateScreening() {
                   Schedule Interview
                 </button>
                 <button
-  className="inline-flex items-center gap-1 px-4 py-2 border text-indigo-600 text-sm font-semibold rounded-xl hover:bg-indigo-50 transition"
-  onClick={() => {
-    setSelectedCandidate(candidate);
-    setShowModal(true);
-  }}
->
-  <FileText className="w-4 h-4" />
-  View Details
-</button>
-{showModal && selectedCandidate && (
-  <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
-    <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-xl">
-      <h2 className="text-xl font-bold mb-4">Candidate #{selectedCandidate.application_id}</h2>
-      <p><strong>Evaluation:</strong> {selectedCandidate.evaluation_criteria}</p>
-      <p><strong>Score:</strong> {selectedCandidate.score}%</p>
-      <p><strong>Remarks:</strong> {selectedCandidate.remarks || "No feedback"}</p>
-      <p><strong>Screened by:</strong> {selectedCandidate.screened_by || "N/A"}</p>
-      <p><strong>Screened at:</strong> {formatDate(selectedCandidate.screened_at)}</p>
-      <div className="mt-4 text-right">
-        <button
-          onClick={() => setShowModal(false)}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700"
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-
+                  className="inline-flex items-center gap-1 px-4 py-2 border text-indigo-600 text-sm font-semibold rounded-xl hover:bg-indigo-50 transition"
+                  onClick={() => {
+                    setSelectedCandidate(candidate);
+                    setShowModal(true);
+                  }}
+                >
+                  <FileText className="w-4 h-4" />
+                  View Details
+                </button>
+                {showModal && selectedCandidate && (
+                  <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
+                    <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-xl">
+                      <h2 className="text-xl font-bold mb-4">
+                        Candidate #{selectedCandidate.application_id}
+                      </h2>
+                      <p>
+                        <strong>Evaluation:</strong>{" "}
+                        {selectedCandidate.evaluation_criteria}
+                      </p>
+                      <p>
+                        <strong>Score:</strong> {selectedCandidate.score}%
+                      </p>
+                      <p>
+                        <strong>Remarks:</strong>{" "}
+                        {selectedCandidate.remarks || "No feedback"}
+                      </p>
+                      <p>
+                        <strong>Screened by:</strong>{" "}
+                        {selectedCandidate.screened_by || "N/A"}
+                      </p>
+                      <p>
+                        <strong>Screened at:</strong>{" "}
+                        {formatDate(selectedCandidate.screened_at)}
+                      </p>
+                      <div className="mt-4 text-right">
+                        <button
+                          onClick={() => setShowModal(false)}
+                          className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ))}
