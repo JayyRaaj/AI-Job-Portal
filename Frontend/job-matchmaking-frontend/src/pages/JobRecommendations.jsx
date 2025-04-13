@@ -1,13 +1,5 @@
 import MainLayout from "../layouts/MainLayout";
-import {
-  Search,
-  MapPin,
-  Briefcase,
-  Star,
-  Clock,
-  Filter,
-  ChevronDown,
-} from "lucide-react";
+import { Search, MapPin, Briefcase, Star, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 
 function JobRecommendations() {
@@ -24,30 +16,26 @@ function JobRecommendations() {
   const filteredJobs = jobs
     .filter(
       (job) =>
-        job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.industry.toLowerCase().includes(searchTerm.toLowerCase())
+        (job.title ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (job.description ?? "")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        (job.industry ?? "").toLowerCase().includes(searchTerm.toLowerCase())
     )
     .filter((job) => {
       if (!experienceFilter) return true;
-      const exp = parseInt(job.experience_required);
+
+      const exp = job.experience_required;
 
       if (experienceFilter === "Entry")
-        return (
-          job.experience_required.includes("0-1") ||
-          job.experience_required.startsWith("1")
-        );
+        return exp?.includes("0-1") || exp?.startsWith("1");
       if (experienceFilter === "Mid")
-        return (
-          job.experience_required.startsWith("2") ||
-          job.experience_required.startsWith("3")
-        );
+        return exp?.startsWith("2") || exp?.startsWith("3");
       if (experienceFilter === "Senior")
         return (
-          job.experience_required.startsWith("4") ||
-          job.experience_required.startsWith("5") ||
-          job.experience_required.startsWith("6")
+          exp?.startsWith("4") || exp?.startsWith("5") || exp?.startsWith("6")
         );
+      return true;
     })
     .sort((a, b) => {
       if (sortOption === "Newest")
@@ -61,14 +49,11 @@ function JobRecommendations() {
       const userId = sessionStorage.getItem("userId");
       const token = sessionStorage.getItem("token");
 
-      const res = await fetch(
-        `http://localhost:5000/api/jobs`, // Changed the endpoint to /jobs to fetch all jobs
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await fetch(`http://localhost:5000/api/jobs`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const data = await res.json();
       setJobs(data);
@@ -85,10 +70,9 @@ function JobRecommendations() {
           <p className="text-gray-500">Showing {jobs.length} jobs</p>
         </div>
 
-        {/* Search and filter bar */}
         <div className="bg-white rounded-2xl shadow-sm p-4 mb-8">
           <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-grow">
+            <div className="flex-grow relative">
               <Search
                 className="absolute left-3 top-3 text-gray-400"
                 size={20}
@@ -100,32 +84,31 @@ function JobRecommendations() {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
-
-              <select
-                className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl pr-8 focus:outline-none"
-                value={experienceFilter}
-                onChange={(e) => setExperienceFilter(e.target.value)}
-              >
-                <option value="">Experience Level</option>
-                <option value="Entry">Entry Level</option>
-                <option value="Mid">Mid-Senior</option>
-                <option value="Senior">Senior</option>
-              </select>
-
-              <select
-                className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl pr-8 focus:outline-none"
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value)}
-              >
-                <option value="Relevance">Sort by: Relevance</option>
-                <option value="Newest">Newest</option>
-                <option value="Highest Salary">Highest Salary</option>
-              </select>
             </div>
+
+            <select
+              className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl focus:outline-none"
+              value={experienceFilter}
+              onChange={(e) => setExperienceFilter(e.target.value)}
+            >
+              <option value="">Experience Level</option>
+              <option value="Entry">Entry Level</option>
+              <option value="Mid">Mid-Senior</option>
+              <option value="Senior">Senior</option>
+            </select>
+
+            <select
+              className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl focus:outline-none"
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+            >
+              <option value="Relevance">Sort by: Relevance</option>
+              <option value="Newest">Newest</option>
+              <option value="Highest Salary">Highest Salary</option>
+            </select>
           </div>
         </div>
 
-        {/* Job cards */}
         <div className="space-y-4">
           {filteredJobs.map((job) => (
             <div
