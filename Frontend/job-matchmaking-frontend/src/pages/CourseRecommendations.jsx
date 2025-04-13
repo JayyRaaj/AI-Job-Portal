@@ -1,208 +1,151 @@
+import React, { useState, useRef, useEffect } from "react";
+import { Send, Mic } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
-import {
-  Search,
-  BookOpen,
-  Clock,
-  Star,
-  Award,
-  Calendar,
-  ChevronDown,
-  Bookmark,
-  Play,
-  Filter,
-} from "lucide-react";
-import { useEffect, useState } from "react";
 
-function CourseRecommendations() {
-  const [courses, setCourses] = useState([]);
-  const [expanded, setExpanded] = useState(null);
+const ChatGPTUI = () => {
+  const [messages, setMessages] = useState([
+    {
+      role: "assistant",
+      content: "Hello! How can I help you today?",
+    },
+  ]);
+  const [inputValue, setInputValue] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
+  const chatContainerRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
-    const fetchCourses = async () => {
-      const res = await fetch(`http://localhost:5000/api/recommendations/courses`);
-      const data = await res.json();
-      setCourses(data);
-    };
-  
-    fetchCourses();
-  }, []);
-  
+    scrollToBottom();
+  }, [messages]);
 
-  const toggleExpand = (id) => {
-    setExpanded(expanded === id ? null : id);
+  const sendMessage = async (text) => {
+    // Add user message
+    setMessages((prev) => [...prev, { role: "user", content: text }]);
+    setInputValue("");
+
+    // Set typing indicator
+    setIsTyping(true);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      });
+
+      const data = await res.json();
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: data.reply },
+      ]);
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "Error contacting the server. Please try again later.",
+        },
+      ]);
+      console.error("Error sending message:", err);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!inputValue.trim()) return;
+    sendMessage(inputValue);
+  };
+
+  // Function to format message content with proper line breaks
+  const formatMessage = (content) => {
+    if (typeof content !== "string") return content;
+
+    // Split by newlines and map to elements with proper breaks
+    return content.split("\n").map((line, i) => (
+      <React.Fragment key={i}>
+        {line}
+        {i < content.split("\n").length - 1 && <br />}
+      </React.Fragment>
+    ));
   };
 
   return (
     <MainLayout>
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">Recommended Courses</h1>
-          <p className="text-gray-500">
-            Discover courses tailored to your career goals
-          </p>
+      <div className="flex flex-col h-screen bg-white text-gray-800">
+        {/* Header - fixed at top */}
+        <div className="sticky top-0 z-10 border-b border-gray-200 py-3 px-4 bg-white">
+          <h1 className="text-xl font-semibold">Skill Bot</h1>
         </div>
-
-        {/* Search and filter bar */}
-        <div className="bg-white rounded-2xl shadow-sm p-4 mb-8">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-grow">
-              <Search
-                className="absolute left-3 top-3 text-gray-400"
-                size={20}
-              />
-              <input
-                type="text"
-                placeholder="Search for courses, skills, topics..."
-                className="w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <button className="flex items-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition">
-                <Filter size={18} />
-                <span>Filters</span>
-                <ChevronDown size={16} />
-              </button>
-              <select className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl appearance-none pr-8 focus:outline-none">
-                <option>All Levels</option>
-                <option>Beginner</option>
-                <option>Intermediate</option>
-                <option>Advanced</option>
-              </select>
-              <select className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl appearance-none pr-8 focus:outline-none">
-                <option>All Platforms</option>
-                <option>Udemy</option>
-                <option>Coursera</option>
-                <option>edX</option>
-                <option>Udacity</option>
-              </select>
-            </div>
-          </div>
-
-         
-        </div>
-
-        {/* Course grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {courses.map((course) => (
-            <div
-              key={course.id}
-              className={`bg-white rounded-2xl shadow-sm overflow-hidden transition-all duration-300 ${expanded === course.id ? "ring-2 ring-primary/30" : "hover:shadow-md"}`}
-            >
-              <div className="relative">
-                <img
-                  src={course.image_url || "https://placehold.jp/3d4070/ffffff/150x150.png"}
-                  alt={course.title}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="absolute top-3 right-3 flex gap-2">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${course.price === "Free" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"}`}
-                  >
-                    {course.price}
-                  </span>
-                  <span className="px-3 py-1 bg-gray-800 bg-opacity-70 text-white rounded-full text-xs font-medium">
-                    {course.level}
-                  </span>
-                </div>
-                <div className="absolute bottom-3 left-3">
-                  <span className="px-3 py-1 bg-gray-800 bg-opacity-70 text-white rounded-full text-xs font-medium flex items-center gap-1">
-                    <Star size={14} className="text-yellow-400" />
-                    {course.rating} ({course.students} students)
-                  </span>
-                </div>
-              </div>
-
-              <div
-                className="p-5 cursor-pointer"
-                onClick={() => toggleExpand(course.id)}
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <h2 className="text-xl font-semibold">{course.title}</h2>
-                </div>
-
-                <div className="flex items-center gap-4 text-gray-600 mb-3">
-                  <div className="flex items-center gap-1">
-                    <BookOpen size={16} />
-                    <span className="text-sm">{course.platform}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock size={16} />
-                    <span className="text-sm">{course.duration}</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {(course.tags?.split(",") || []).map((tag, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                {expanded !== course.id && (
-                  <div className="flex gap-3">
-                    <button className="flex-1 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary/90 transition flex items-center justify-center gap-2">
-                      <Play size={16} />
-                      Enroll Now
-                    </button>
-                    <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-100 transition">
-                      <Bookmark size={16} />
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {expanded === course.id && (
-                <div className="px-5 pb-5">
-                  <div className="p-4 bg-gray-50 rounded-xl mb-4">
-                    <p className="text-gray-700 text-sm">
-                      {course.description}
-                    </p>
-                    <div className="mt-3 flex items-center text-xs text-gray-500">
-                      <Calendar size={14} className="mr-1" />
-                      {course.updated}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center mb-4">
-                    <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-700 mr-3">
-                      {course.instructor
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </div>
-                    <div>
-                      <p className="font-medium">{course.instructor}</p>
-                      <p className="text-xs text-gray-500">Course Instructor</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <button className="flex-1 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary/90 transition flex items-center justify-center gap-2">
-                      <Play size={16} />
-                      Enroll Now
-                    </button>
-                    <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-100 transition flex items-center gap-2">
-                      <Bookmark size={16} />
-                      Save
-                    </button>
-                    <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-100 transition">
-                      Preview
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
         
+        {/* Chat messages container - scrollable area */}
+        <div 
+          ref={chatContainerRef}
+          className="flex-1 overflow-y-auto px-4 py-2 pb-24"
+        >
+          <div className="max-w-3xl mx-auto space-y-4">
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`max-w-xs md:max-w-md lg:max-w-lg rounded-lg p-3 ${
+                    message.role === "user"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-100 text-gray-800"
+                  }`}
+                >
+                  {formatMessage(message.content)}
+                </div>
+              </div>
+            ))}
+            {isTyping && (
+              <div className="flex justify-start">
+                <div className="bg-gray-100 rounded-lg p-3">
+                  <div className="flex space-x-2">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
+
+        {/* Fixed input area at bottom */}
+        <div className="fixed bottom-0 left-0 right-0 border-t border-gray-200 bg-white p-3 shadow-md">
+          <form onSubmit={handleSubmit} className="max-w-3xl mx-auto flex items-center relative">
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              className="w-full p-3 rounded-lg bg-white text-gray-800 border border-gray-300 focus:outline-none focus:border-blue-500"
+              placeholder="Message SkillBot here..."
+            />
+            <div className="absolute right-3 flex space-x-2">
+              
+              <button
+                type="submit"
+                className={`${inputValue.trim() ? "text-blue-600" : "text-gray-400"}`}
+                disabled={!inputValue.trim()}
+                aria-label="Send message"
+              >
+                <Send size={18} />
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </MainLayout>
   );
-}
+};
 
-export default CourseRecommendations;
+export default ChatGPTUI;
