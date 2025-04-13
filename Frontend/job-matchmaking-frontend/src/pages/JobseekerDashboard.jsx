@@ -20,40 +20,82 @@ function JobseekerDashboard() {
 
   const [recommendedJobs, setRecommendedJobs] = useState([]);
   const [interviews, setInterviews] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const userId = sessionStorage.getItem("userId");
   const token = sessionStorage.getItem("token");
 
   useEffect(() => {
     const fetchData = async () => {
-      const headers = { Authorization: `Bearer ${token}` };
+      try {
+        setIsLoading(true);
+        setError(null);
+        const headers = { Authorization: `Bearer ${token}` };
 
-      const [appsRes, recRes, intRes] = await Promise.all([
-        fetch(`http://localhost:5000/api/reminders/jobseeker/${userId}`, { headers }),
+        // Using the exact route from applicationRoutes.js
+        const appsRes = await fetch(`http://localhost:5000/api/applications/user/${userId}`, { 
+          headers 
+        });
 
-        fetch(`http://localhost:5000/api/recommendations/jobs/`, {
-          headers,
-        }),
-        fetch(`http://localhost:5000/api/reminders/`, { headers }),
-      ]);
+        if (!appsRes.ok) {
+          throw new Error(`Applications request failed: ${appsRes.status}`);
+        }
+        
+        const applications = await appsRes.json();
+        
+        const recRes = await fetch(`http://localhost:5000/api/recommendations/jobs`, { headers });
+        if (!recRes.ok) throw new Error(`Recommendations failed: ${recRes.status}`);
+        const recommendations = await recRes.json();
+        setRecommendedJobs(recommendations);
+        
+        
+        // For interviews, filter applications with interview status
+        const scheduledInterviews = applications.filter(app => 
+          app.status === 'interview_scheduled' || app.status === 'interview_accepted'
+        );
 
-      const applications = await appsRes.json();
-      const recommendations = await recRes.json();
-      const reminders = await intRes.json();
+        setStats({
+          applications: applications.length,
+          interviews: scheduledInterviews.length,
+          savedJobs: 5, // placeholder
+          profileComplete: "80%", // placeholder
+        });
 
-      setStats({
-        applications: applications.length,
-        interviews: reminders.length,
-        savedJobs: 5, // placeholder
-        profileComplete: "80%", // placeholder
-      });
-
-      setRecommendedJobs(recommendations);
-      setInterviews(reminders);
+        setInterviews(scheduledInterviews);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    fetchData();
-  }, []);
+    if (userId && token) {
+      fetchData();
+    }
+  }, [userId, token]);
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="flex justify-center items-center h-96">
+          <p className="text-gray-500">Loading your dashboard...</p>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <MainLayout>
+        <div className="flex flex-col justify-center items-center h-96">
+          <p className="text-red-500 mb-4">Failed to load dashboard data</p>
+          <p className="text-gray-600">{error}</p>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -97,13 +139,18 @@ function JobseekerDashboard() {
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {recommendedJobs.map((job, i) => (
-            <JobCard
+          {recommendedJobs.length > 0 ? (
+            recommendedJobs.map((job, i) => (
+              <JobCard
               key={i}
               title={job.title}
-              company={job.location || "N/A"}
+              company={job.reason}
             />
-          ))}
+            
+            ))
+          ) : (
+            <p className="text-gray-500">No recommended jobs available.</p>
+          )}
         </div>
       </section>
 
@@ -115,18 +162,22 @@ function JobseekerDashboard() {
           </h2>
         </div>
         <ul className="space-y-4">
-          {interviews.map((item, i) => (
-            <InterviewItem
-              key={i}
-              title={item.title}
-              company={item.platform || "N/A"}
-              date={new Date(item.interview_date).toLocaleDateString()}
-              time={new Date(item.interview_date).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            />
-          ))}
+          {interviews.length > 0 ? (
+            interviews.map((item, i) => (
+              <InterviewItem
+                key={i}
+                title={item.title || "Interview"}
+                company={item.company_name || "Company"}
+                date={new Date(item.interview_date || Date.now()).toLocaleDateString()}
+                time={new Date(item.interview_date || Date.now()).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              />
+            ))
+          ) : (
+            <p className="text-gray-500">No upcoming interviews.</p>
+          )}
         </ul>
       </section>
     </MainLayout>

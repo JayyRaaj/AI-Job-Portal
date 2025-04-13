@@ -2,7 +2,8 @@
 const Recommendation = require('../models/Recommendation');
 
 exports.recommendJob = (req, res) => {
-  Recommendation.recommendJob( job_id, reason, (err) => {
+  const { user_id, job_id, reason } = req.body;
+  Recommendation.recommendJob(user_id, job_id, reason, (err) => {
     if (err) return res.status(500).json({ error: 'Job recommendation failed' });
     res.json({ message: 'Job recommended' });
   });
