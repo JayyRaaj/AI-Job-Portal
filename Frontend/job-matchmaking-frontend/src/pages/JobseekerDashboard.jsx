@@ -228,7 +228,8 @@ function JobseekerDashboard() {
             <button
   onClick={() => {
     setSelectedJob(null);
-    window.location.href = "/job-recommendations";
+    window.open("/job-recommendations", "_blank");
+
   }}
   className={`mt-6 w-full py-2 px-4 rounded-xl font-semibold text-white ${
     applied ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"
