@@ -22,6 +22,9 @@ function JobseekerDashboard() {
   const [interviews, setInterviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [selectedInterview, setSelectedInterview] = useState(null);
+
 
   const userId = sessionStorage.getItem("userId");
   const token = sessionStorage.getItem("token");
@@ -34,25 +37,33 @@ function JobseekerDashboard() {
         const headers = { Authorization: `Bearer ${token}` };
 
         // Using the exact route from applicationRoutes.js
-        const appsRes = await fetch(`http://localhost:5000/api/applications/user/${userId}`, { 
-          headers 
-        });
+        const appsRes = await fetch(
+          `http://localhost:5000/api/applications/user/${userId}`,
+          {
+            headers,
+          }
+        );
 
         if (!appsRes.ok) {
           throw new Error(`Applications request failed: ${appsRes.status}`);
         }
-        
+
         const applications = await appsRes.json();
-        
-        const recRes = await fetch(`http://localhost:5000/api/recommendations/jobs`, { headers });
-        if (!recRes.ok) throw new Error(`Recommendations failed: ${recRes.status}`);
+
+        const recRes = await fetch(
+          `http://localhost:5000/api/recommendations/jobs`,
+          { headers }
+        );
+        if (!recRes.ok)
+          throw new Error(`Recommendations failed: ${recRes.status}`);
         const recommendations = await recRes.json();
         setRecommendedJobs(recommendations);
-        
-        
+
         // For interviews, filter applications with interview status
-        const scheduledInterviews = applications.filter(app => 
-          app.status === 'interview_scheduled' || app.status === 'interview_accepted'
+        const scheduledInterviews = applications.filter(
+          (app) =>
+            app.status === "interview_scheduled" ||
+            app.status === "interview_accepted"
         );
 
         setStats({
@@ -62,7 +73,16 @@ function JobseekerDashboard() {
           profileComplete: "80%", // placeholder
         });
 
-        setInterviews(scheduledInterviews);
+        const reminderRes = await fetch(
+          `http://localhost:5000/api/interviewreminders/user/${userId}`,
+          {
+            headers,
+          }
+        );
+        if (!reminderRes.ok)
+          throw new Error(`Interview reminders failed: ${reminderRes.status}`);
+        const reminders = await reminderRes.json();
+        setInterviews(reminders);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
         setError(error.message);
@@ -117,7 +137,7 @@ function JobseekerDashboard() {
         <StatCard
           icon={<CalendarDays className="text-green-600 w-6 h-6" />}
           label="Scheduled Interviews"
-          value={stats.interviews}
+          value={interviews.length}
         />
         <StatCard
           icon={<Bookmark className="text-yellow-600 w-6 h-6" />}
@@ -142,11 +162,11 @@ function JobseekerDashboard() {
           {recommendedJobs.length > 0 ? (
             recommendedJobs.map((job, i) => (
               <JobCard
-              key={i}
-              title={job.title}
-              company={job.reason}
-            />
-            
+                key={i}
+                title={job.title}
+                company={job.reason}
+                onClick={() => setSelectedJob(job)}
+              />
             ))
           ) : (
             <p className="text-gray-500">No recommended jobs available.</p>
@@ -165,21 +185,90 @@ function JobseekerDashboard() {
           {interviews.length > 0 ? (
             interviews.map((item, i) => (
               <InterviewItem
-                key={i}
-                title={item.title || "Interview"}
-                company={item.company_name || "Company"}
-                date={new Date(item.interview_date || Date.now()).toLocaleDateString()}
-                time={new Date(item.interview_date || Date.now()).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              />
+  key={i}
+  title={item.title || "Interview"}
+  company={item.company_name || "Company"}
+  date={new Date(item.interview_date).toLocaleDateString()}
+  time={new Date(item.interview_date).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  })}
+  onClick={() => setSelectedInterview(item)}
+/>
+
             ))
           ) : (
             <p className="text-gray-500">No upcoming interviews.</p>
           )}
         </ul>
       </section>
+      {selectedJob && (
+        <div className="fixed inset-0 backdrop-blur-sm bg-white/10 flex justify-center items-center z-50">
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-gray-200 relative">
+            <button
+              onClick={() => setSelectedJob(null)}
+              className="absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-xl font-bold"
+            >
+              ×
+            </button>
+            <h2 className="text-3xl font-extrabold text-gray-900 mb-3">
+              {selectedJob.title}
+            </h2>
+            <p className="mb-2 text-gray-700">
+              <span className="font-semibold">Reason:</span>{" "}
+              {selectedJob.reason}
+            </p>
+            <p className="mb-2 text-gray-700">
+              <span className="font-semibold">Location:</span>{" "}
+              {selectedJob.location}
+            </p>
+            <p className="text-sm text-gray-500 mt-4">
+              Recommended on{" "}
+              {new Date(selectedJob.recommended_at).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
+      )}
+
+{selectedInterview && (
+        <div className="fixed inset-0 backdrop-blur-sm bg-white/10 flex justify-center items-center z-50">
+    <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-gray-200 relative">
+      <button
+        onClick={() => setSelectedInterview(null)}
+        className="absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-xl font-bold"
+      >
+        ×
+      </button>
+      <h2 className="text-2xl font-bold text-gray-900 mb-2">Interview Details</h2>
+      <p className="mb-2 text-gray-700">
+        <span className="font-semibold">Platform:</span> {selectedInterview.platform}
+      </p>
+      <p className="mb-2 text-gray-700">
+        <span className="font-semibold">Meeting Link:</span>{' '}
+        <a
+          href={selectedInterview.meeting_link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-indigo-600 underline"
+        >
+          {selectedInterview.meeting_link}
+        </a>
+      </p>
+      <p className="mb-2 text-gray-700">
+        <span className="font-semibold">Date:</span>{' '}
+        {new Date(selectedInterview.interview_date).toLocaleDateString()}
+      </p>
+      <p className="text-gray-700">
+        <span className="font-semibold">Time:</span>{' '}
+        {new Date(selectedInterview.interview_date).toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        })}
+      </p>
+    </div>
+  </div>
+)}
+
     </MainLayout>
   );
 }
@@ -192,21 +281,24 @@ const StatCard = ({ icon, label, value }) => (
   </div>
 );
 
-const JobCard = ({ title, company }) => (
-  <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-md hover:shadow-lg transition">
+const JobCard = ({ title, company, onClick }) => (
+  <div
+    onClick={onClick}
+    className="cursor-pointer bg-white p-6 rounded-3xl border border-gray-100 shadow-md hover:shadow-lg transition"
+  >
     <h3 className="text-lg font-semibold text-gray-800 mb-1">{title}</h3>
     <p className="text-sm text-gray-500 flex items-center gap-1">
       <Building2 className="w-4 h-4" />
       {company}
     </p>
-    <button className="mt-4 inline-block text-sm text-indigo-600 font-medium hover:underline">
-      View Details
-    </button>
   </div>
 );
 
-const InterviewItem = ({ title, company, date, time }) => (
-  <li className="bg-white p-5 rounded-3xl border border-gray-100 shadow-md hover:shadow-lg transition">
+const InterviewItem = ({ title, company, date, time, onClick }) => (
+  <li
+    onClick={onClick}
+    className="cursor-pointer bg-white p-5 rounded-3xl border border-gray-100 shadow-md hover:shadow-lg transition"
+  >
     <p className="text-gray-800 font-semibold">
       {title} <span className="text-gray-500 font-normal">@ {company}</span>
     </p>
@@ -215,5 +307,6 @@ const InterviewItem = ({ title, company, date, time }) => (
     </p>
   </li>
 );
+
 
 export default JobseekerDashboard;
