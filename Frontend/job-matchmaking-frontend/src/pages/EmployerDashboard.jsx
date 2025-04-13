@@ -137,8 +137,8 @@ function EmployerDashboard() {
         </ul>
       </section>
       {selectedApp && (
-  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-    <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl">
+        <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl">
       <h2 className="text-xl font-bold mb-4">Application Details</h2>
       <p><strong>Applicant:</strong> {selectedApp.applicant_name}</p>
       <p><strong>Job Title:</strong> {selectedApp.job_title}</p>

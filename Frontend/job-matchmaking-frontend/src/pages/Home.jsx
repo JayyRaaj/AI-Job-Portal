@@ -10,17 +10,14 @@ import {
   Star,
 } from "lucide-react";
 
-
 import job from "../assets/images/Job.png";
 
 import { ChevronRight, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 function Home() {
   const [searchQuery, setSearchQuery] = useState("");
-
   const [featuredJobs, setFeaturedJobs] = useState([]);
   const navigate = useNavigate();
 
@@ -78,7 +75,6 @@ function Home() {
   
     requestAnimationFrame(animation);
   };
-  
 
   return (
     <div>
@@ -91,8 +87,8 @@ function Home() {
         {/* Grid overlay */}
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:40px_40px]"></div>
 
-        {/* Hero Content */}
-        <div className="w-full px-6 pt-12 pb-24 md:pt-20 md:pb-32 z-10 relative">
+        {/* Hero Content - Now properly centered with container */}
+        <div className="container mx-auto max-w-7xl px-6 pt-12 pb-24 md:pt-20 md:pb-32 z-10 relative">
           <div className="flex flex-col md:flex-row items-center">
             <div className="w-full md:w-1/2 md:pr-12 text-center md:text-left">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-amber-200">
@@ -107,8 +103,7 @@ function Home() {
               </p>
 
               <div className="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
-                <button       onClick={() => navigate("/login")}
- className="bounce-slow flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 text-black font-medium px-8 py-4 rounded-xl hover:from-amber-400 hover:to-amber-500 transition duration-300 shadow-lg shadow-amber-500/20 group">
+                <button onClick={() => navigate("/login")} className="bounce-slow flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 text-black font-medium px-8 py-4 rounded-xl hover:from-amber-400 hover:to-amber-500 transition duration-300 shadow-lg shadow-amber-500/20 group">
                   <span>Join Now</span>
                   <ChevronRight
                     size={18}
@@ -116,7 +111,7 @@ function Home() {
                   />
                 </button>
                 <button
-                 onClick={scrollToExplore} 
+                  onClick={scrollToExplore} 
                   className="flex items-center justify-center space-x-2 bg-white/5 backdrop-blur-sm border border-white/10 text-white px-8 py-4 rounded-xl hover:bg-white/10 transition duration-300"
                 >
                   <span>Explore Now</span>
@@ -160,21 +155,19 @@ function Home() {
         </div>
       </section>
 
-      {/* Featured Jobs Section */}
+      {/* Featured Jobs Section - Now properly centered with container */}
       <section id="explore-section" className="py-16 bg-gray-50">
-        <div className="w-full px-4">
+        <div className="container mx-auto max-w-7xl px-4">
           <div className="flex justify-between items-center mb-10">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
               Featured Jobs
             </h2>
             <span
-  onClick={scrollToJobs}
-  className="cursor-pointer text-blue-600 hover:text-blue-700 inline-flex items-center font-medium"
->
-  View all jobs <ArrowRight size={16} className="ml-1" />
-</span>
-
-
+              onClick={scrollToJobs}
+              className="cursor-pointer text-blue-600 hover:text-blue-700 inline-flex items-center font-medium"
+            >
+              View all jobs <ArrowRight size={16} className="ml-1" />
+            </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -241,9 +234,9 @@ function Home() {
         </div>
       </section>
 
-      {/* Platform Stats Section */}
+      {/* Platform Stats Section - Now properly centered with container */}
       <section className="py-16 bg-white">
-        <div className="w-full px-4">
+        <div className="container mx-auto max-w-7xl px-4">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-12">
             Our Platform at a Glance
           </h2>
@@ -292,9 +285,9 @@ function Home() {
         </div>
       </section>
 
-      {/* Categories Section */}
+      {/* Categories Section - Now properly centered with container */}
       <section id="jobs-section" className="py-16 bg-gray-50">
-        <div className="w-full px-4">
+        <div className="container mx-auto max-w-7xl px-4">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-12">
             Browse Jobs by Category
           </h2>
@@ -323,9 +316,9 @@ function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA Section - Now properly centered with container */}
       <section className="py-16 bg-gradient-to-r from-indigo-600 to-blue-500 text-white">
-        <div className="w-full px-4 text-center">
+        <div className="container mx-auto max-w-7xl px-4 text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-6">
             Ready to Take the Next Step in Your Career?
           </h2>
@@ -335,10 +328,10 @@ function Home() {
             employers.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button  onClick={() => navigate("/register")} className=" bounce-slow px-8 py-3 bg-white text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition duration-200">
+            <button onClick={() => navigate("/register")} className="bounce-slow px-8 py-3 bg-white text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition duration-200">
               Sign Up
             </button>
-            <button onClick={() => navigate("/login")} className=" px-8 py-3 bg-transparent border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:bg-opacity-10 transition duration-200">
+            <button onClick={() => navigate("/login")} className="px-8 py-3 bg-transparent border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:bg-opacity-10 transition duration-200">
               Sign In
             </button>
           </div>

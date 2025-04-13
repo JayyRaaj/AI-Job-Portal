@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/', async (req, res) => {
   const userMessage = req.body.message;
   const prompt = `### Instruction:
-You are a helpful fitness coach. Answer briefly and clearly.
+You are a helpful career coach. Answer briefly and clearly.
 
 ### Input:
 ${userMessage}

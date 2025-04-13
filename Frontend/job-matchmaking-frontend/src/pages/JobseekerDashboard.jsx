@@ -24,7 +24,7 @@ function JobseekerDashboard() {
   const [error, setError] = useState(null);
   const [selectedJob, setSelectedJob] = useState(null);
   const [selectedInterview, setSelectedInterview] = useState(null);
-
+  const [applied, setApplied] = useState(false);
 
   const userId = sessionStorage.getItem("userId");
   const token = sessionStorage.getItem("token");
@@ -185,17 +185,16 @@ function JobseekerDashboard() {
           {interviews.length > 0 ? (
             interviews.map((item, i) => (
               <InterviewItem
-  key={i}
-  title={item.title || "Interview"}
-  company={item.company_name || "Company"}
-  date={new Date(item.interview_date).toLocaleDateString()}
-  time={new Date(item.interview_date).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  })}
-  onClick={() => setSelectedInterview(item)}
-/>
-
+                key={i}
+                title={item.title || "Interview"}
+                company={item.company_name || "Company"}
+                date={new Date(item.interview_date).toLocaleDateString()}
+                time={new Date(item.interview_date).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+                onClick={() => setSelectedInterview(item)}
+              />
             ))
           ) : (
             <p className="text-gray-500">No upcoming interviews.</p>
@@ -226,49 +225,66 @@ function JobseekerDashboard() {
               Recommended on{" "}
               {new Date(selectedJob.recommended_at).toLocaleDateString()}
             </p>
+            <button
+              onClick={() => {
+                setSelectedJob(null);
+
+                setApplied(true);
+              }}
+              className={`mt-6 w-full py-2 px-4 rounded-xl font-semibold text-white ${
+                applied ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"
+              }`}
+            >
+              {applied ? "Applied" : "Apply"}
+            </button>
           </div>
         </div>
       )}
 
-{selectedInterview && (
+      {selectedInterview && (
         <div className="fixed inset-0 backdrop-blur-sm bg-white/10 flex justify-center items-center z-50">
-    <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-gray-200 relative">
-      <button
-        onClick={() => setSelectedInterview(null)}
-        className="absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-xl font-bold"
-      >
-        ×
-      </button>
-      <h2 className="text-2xl font-bold text-gray-900 mb-2">Interview Details</h2>
-      <p className="mb-2 text-gray-700">
-        <span className="font-semibold">Platform:</span> {selectedInterview.platform}
-      </p>
-      <p className="mb-2 text-gray-700">
-        <span className="font-semibold">Meeting Link:</span>{' '}
-        <a
-          href={selectedInterview.meeting_link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-indigo-600 underline"
-        >
-          {selectedInterview.meeting_link}
-        </a>
-      </p>
-      <p className="mb-2 text-gray-700">
-        <span className="font-semibold">Date:</span>{' '}
-        {new Date(selectedInterview.interview_date).toLocaleDateString()}
-      </p>
-      <p className="text-gray-700">
-        <span className="font-semibold">Time:</span>{' '}
-        {new Date(selectedInterview.interview_date).toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        })}
-      </p>
-    </div>
-  </div>
-)}
-
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-gray-200 relative">
+            <button
+              onClick={() => setSelectedInterview(null)}
+              className="absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-xl font-bold"
+            >
+              ×
+            </button>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Interview Details
+            </h2>
+            <p className="mb-2 text-gray-700">
+              <span className="font-semibold">Platform:</span>{" "}
+              {selectedInterview.platform}
+            </p>
+            <p className="mb-2 text-gray-700">
+              <span className="font-semibold">Meeting Link:</span>{" "}
+              <a
+                href={selectedInterview.meeting_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-indigo-600 underline"
+              >
+                {selectedInterview.meeting_link}
+              </a>
+            </p>
+            <p className="mb-2 text-gray-700">
+              <span className="font-semibold">Date:</span>{" "}
+              {new Date(selectedInterview.interview_date).toLocaleDateString()}
+            </p>
+            <p className="text-gray-700">
+              <span className="font-semibold">Time:</span>{" "}
+              {new Date(selectedInterview.interview_date).toLocaleTimeString(
+                [],
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }
+              )}
+            </p>
+          </div>
+        </div>
+      )}
     </MainLayout>
   );
 }
@@ -307,6 +323,5 @@ const InterviewItem = ({ title, company, date, time, onClick }) => (
     </p>
   </li>
 );
-
 
 export default JobseekerDashboard;

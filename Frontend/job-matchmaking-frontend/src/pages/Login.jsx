@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -17,10 +19,13 @@ function Login() {
       else if (role === "employer") navigate("/dashboard/employer");
       else if (role === "admin") navigate("/dashboard/admin");
     }
-  }, []);
+  }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+    setIsLoading(true);
+    
     try {
       const res = await fetch("http://localhost:5000/api/users/login", {
         method: "POST",
@@ -28,6 +33,7 @@ function Login() {
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
+      
       if (res.ok) {
         sessionStorage.setItem("token", data.token);
         sessionStorage.setItem("userId", data.user.id);
@@ -42,10 +48,12 @@ function Login() {
         }
         console.log(data.user);
       } else {
-        alert(data.error);
+        setError(data.error || "Invalid credentials. Please try again.");
       }
     } catch (err) {
-      alert("Login failed");
+      setError("Connection error. Please check your internet connection and try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -62,10 +70,24 @@ function Login() {
       <div className="max-w-md w-full bg-white bg-opacity-95 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden">
         <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-8 px-8">
           <h2 className="text-3xl font-bold text-center">Skill sync</h2>
-          <p className="text-center mt-2 text-blue-100">Welcome back to your fitness journey</p>
         </div>
 
         <div className="px-8 py-10">
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm">{error}</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <form className="space-y-6" onSubmit={handleLogin}>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -106,24 +128,23 @@ function Login() {
               </div>
             </div>
 
-           
-
             <button
               type="submit"
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-lg font-medium text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150"
+              disabled={isLoading}
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-lg font-medium text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 disabled:opacity-70"
             >
-              Sign In
+              {isLoading ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Signing in...
+                </span>
+              ) : (
+                "Sign In"
+              )}
             </button>
-
-            <div className="mt-6 text-center">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                </div>
-               
-              </div>
-
-              
-            </div>
 
             <div className="text-center text-sm">
               <p className="text-gray-600">
