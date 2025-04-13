@@ -20,11 +20,11 @@ exports.getByEmployer = (req, res) => {
 exports.getByJobseeker = (req, res) => {
     const userId = req.params.id;
     const query = `
-      SELECT ir.interview_date, j.title
+      SELECT ir.interview_date, ir.platform, ir.meeting_link, j.title
       FROM interviewreminders ir
       JOIN applications a ON ir.application_id = a.id
       JOIN jobs j ON a.job_id = j.id
-      WHERE a.user_id = ?
+      WHERE a.user_id = 4
       ORDER BY ir.interview_date DESC
     `;
     db.query(query, [userId], (err, results) => {

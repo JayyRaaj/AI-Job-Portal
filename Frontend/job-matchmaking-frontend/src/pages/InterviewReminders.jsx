@@ -10,9 +10,12 @@ function InterviewReminders() {
       const userId = sessionStorage.getItem("userId");
       const token = sessionStorage.getItem("token");
 
-      const res = await fetch(`http://localhost:5000/api/reminders`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `http://localhost:5000/api/reminders/jobseeker/${userId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       const data = await res.json();
       setReminders(data);
@@ -61,6 +64,7 @@ function InterviewReminders() {
                 <Video className="w-4 h-4 text-indigo-500" />
                 <span>{reminder.platform}</span>
               </div>
+
               <a
                 href={reminder.meeting_link}
                 target="_blank"
