@@ -24,6 +24,7 @@ function EmployerDashboard() {
   const employerId = sessionStorage.getItem("userId");
   const token = sessionStorage.getItem("token");
   const [selectedApp, setSelectedApp] = useState(null);
+  const [resumeError, setResumeError] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,7 +107,10 @@ function EmployerDashboard() {
               key={i}
               name={app.applicant_name}
               position={app.job_title}
-              onView={() => setSelectedApp(app)}
+              onView={() => {
+                setResumeError("");
+                setSelectedApp(app);
+              }}
             />
           ))}
         </div>
@@ -149,26 +153,37 @@ function EmployerDashboard() {
 
             <button
               onClick={async () => {
+                setResumeError("");
                 const res = await fetch(
-                  `http://localhost:5000/api/resumes/${selectedApp.user_id}/latest`,
+                  `http://localhost:5000/api/resumes/${selectedApp.user_id}`,
                   {
                     headers: { Authorization: `Bearer ${token}` },
                   }
                 );
                 const data = await res.json();
                 if (data?.file_path) {
-                  window.open(
-                    `http://localhost:5000/${data.file_path}`,
-                    "_blank"
+                  const fileExists = await fetch(
+                    `http://localhost:5000/${data.file_path}`
                   );
+                  if (fileExists.ok) {
+                    window.open(
+                      `http://localhost:5000/${data.file_path}`,
+                      "_blank"
+                    );
+                  } else {
+                    setResumeError("Resume file is missing.");
+                  }
                 } else {
-                  alert("Resume not found");
+                  setResumeError("Resume not found.");
                 }
               }}
               className="mt-4 px-4 py-2 bg-gray-100 text-indigo-600 rounded-xl hover:bg-gray-200"
             >
               View Resume
             </button>
+            {resumeError && (
+              <p className="text-red-600 text-sm mt-2">{resumeError}</p>
+            )}
 
             <div className="text-right mt-6">
               <button
