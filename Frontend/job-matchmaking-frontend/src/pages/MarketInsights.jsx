@@ -9,21 +9,33 @@ function MarketInsights() {
   const [news, setNews] = useState([]);
 
   useEffect(() => {
+
+    
     const loadData = async () => {
       const fetchType = async (type, setter) => {
         const res = await fetch(`http://localhost:5000/api/insights?type=${type}`);
         if (res.ok) {
           const data = await res.json();
-          setter(data.map(d => ({ ...d, extra: JSON.parse(d.extra || '{}') })));
-        }
+          setter(data.map(d => ({
+            ...d,
+            extra: typeof d.extra === "string" ? JSON.parse(d.extra || '{}') : d.extra
+          })));
+                  }
       };
+    
       await Promise.all([
         fetchType("trend", setTrends),
-        fetchType("location", setLocations),
         fetchType("salary", setSalaries),
         fetchType("news", setNews)
       ]);
+    
+      const res = await fetch("http://localhost:5000/api/insights/hotspots/jobs");
+      if (res.ok) {
+        const data = await res.json();
+        setLocations(data);
+      }
     };
+    
 
     loadData();
   }, []);
@@ -77,9 +89,11 @@ function MarketInsights() {
               {locations.map((item, i) => (
                 <div key={i} className="flex items-center">
                   <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
-                  <span className="font-medium text-gray-700">{item.extra.city}</span>
+                  <span className="font-medium text-gray-700">
+  {item.title} — {item.location}
+</span>
                   <div className="ml-auto bg-emerald-100 text-emerald-700 text-xs font-medium px-2 py-1 rounded-full">
-                    {item.extra.tag}
+                  {item.count} listings
                   </div>
                 </div>
               ))}

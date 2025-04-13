@@ -38,3 +38,14 @@ exports.getInsights = (req, res) => {
   }
 };
 
+exports.getHotLocations = (req, res) => {
+  MarketInsight.getHotJobLocations((err, results) => {
+    if (err) {
+      console.error("DB Error:", err); // 👈 ADD THIS
+      return res.status(500).json({ error: 'Failed to fetch job hotspots' });
+    }
+    res.json(results);
+  });
+};
+
+

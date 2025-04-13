@@ -39,7 +39,7 @@ function Navbar() {
         {role === "jobseeker" && (
           <>
             <NavItem to="/job-recommendations" label="Jobs" />
-            <NavItem to="/course-recommendations" label="Courses" />
+            {/* <NavItem to="/course-recommendations" label="Courses" /> */}
             <NavItem to="/market-insights" label="Insight" />
             <NavItem to="/interview-reminders" label="Remind" />
             <NavItem to="/dashboard/jobseeker" label="Jobseeker" />

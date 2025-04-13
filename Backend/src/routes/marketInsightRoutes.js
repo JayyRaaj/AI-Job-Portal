@@ -6,5 +6,7 @@ const controller = require('../controllers/marketInsightController');
 router.post('/', controller.createInsight);
 router.get('/', controller.getInsights);
 router.get('/:id', controller.getInsight);
+router.get('/hotspots/jobs', controller.getHotLocations);
+
 
 module.exports = router;
