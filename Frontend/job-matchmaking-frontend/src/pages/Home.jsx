@@ -33,60 +33,62 @@ function Home() {
   const scrollToExplore = () => {
     const target = document.getElementById("explore-section");
     if (!target) return;
-  
-    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
+
+    const targetPosition =
+      target.getBoundingClientRect().top + window.pageYOffset;
     const startPosition = window.pageYOffset;
     const distance = targetPosition - startPosition;
     const duration = 1000;
     let startTime = null;
-  
+
     const easeInOutQuad = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
-  
+
     const animation = (currentTime) => {
       if (!startTime) startTime = currentTime;
       const timeElapsed = currentTime - startTime;
-      const run = easeInOutQuad(timeElapsed / duration) * distance + startPosition;
+      const run =
+        easeInOutQuad(timeElapsed / duration) * distance + startPosition;
       window.scrollTo(0, run);
       if (timeElapsed < duration) requestAnimationFrame(animation);
     };
-  
+
     requestAnimationFrame(animation);
   };
-  
+
   const scrollToJobs = () => {
     const target = document.getElementById("jobs-section");
     if (!target) return;
-  
-    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
+
+    const targetPosition =
+      target.getBoundingClientRect().top + window.pageYOffset;
     const startPosition = window.pageYOffset;
     const distance = targetPosition - startPosition;
     const duration = 1000;
     let startTime = null;
-  
+
     const easeInOutQuad = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
-  
+
     const animation = (currentTime) => {
       if (!startTime) startTime = currentTime;
       const timeElapsed = currentTime - startTime;
-      const run = easeInOutQuad(timeElapsed / duration) * distance + startPosition;
+      const run =
+        easeInOutQuad(timeElapsed / duration) * distance + startPosition;
       window.scrollTo(0, run);
       if (timeElapsed < duration) requestAnimationFrame(animation);
     };
-  
+
     requestAnimationFrame(animation);
   };
 
   return (
     <div>
       <section className="bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white min-h-screen relative overflow-hidden">
-        {/* Abstract background elements */}
+        Abstract background elements
         <div className="absolute -top-20 -right-20 w-64 h-64 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full blur-3xl opacity-20"></div>
         <div className="absolute top-1/2 -left-32 w-64 h-64 bg-gradient-to-r from-blue-600 to-cyan-400 rounded-full blur-3xl opacity-10"></div>
         <div className="absolute -bottom-16 right-1/3 w-80 h-80 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full blur-3xl opacity-10"></div>
-
         {/* Grid overlay */}
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:40px_40px]"></div>
-
         {/* Hero Content - Now properly centered with container */}
         <div className="container mx-auto max-w-7xl px-6 pt-12 pb-24 md:pt-20 md:pb-32 z-10 relative">
           <div className="flex flex-col md:flex-row items-center">
@@ -103,7 +105,10 @@ function Home() {
               </p>
 
               <div className="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
-                <button onClick={() => navigate("/login")} className="bounce-slow flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 text-black font-medium px-8 py-4 rounded-xl hover:from-amber-400 hover:to-amber-500 transition duration-300 shadow-lg shadow-amber-500/20 group">
+                <button
+                  onClick={() => navigate("/login")}
+                  className="bounce-slow flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 text-black font-medium px-8 py-4 rounded-xl hover:from-amber-400 hover:to-amber-500 transition duration-300 shadow-lg shadow-amber-500/20 group"
+                >
                   <span>Join Now</span>
                   <ChevronRight
                     size={18}
@@ -111,19 +116,11 @@ function Home() {
                   />
                 </button>
                 <button
-                  onClick={scrollToExplore} 
+                  onClick={scrollToExplore}
                   className="flex items-center justify-center space-x-2 bg-white/5 backdrop-blur-sm border border-white/10 text-white px-8 py-4 rounded-xl hover:bg-white/10 transition duration-300"
                 >
                   <span>Explore Now</span>
                 </button>
-              </div>
-
-              <div className="flex items-center justify-center md:justify-start space-x-4 text-white/60">
-                <div className="flex -space-x-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 border-2 border-gray-900"></div>
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-green-500 border-2 border-gray-900"></div>
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-purple-500 border-2 border-gray-900"></div>
-                </div>
               </div>
             </div>
 
@@ -224,7 +221,10 @@ function Home() {
                     ))}
                   </div>
 
-                  <button onClick={scrollToJobs} className="w-full py-2 bg-white border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors duration-200 font-medium">
+                  <button
+                    onClick={scrollToJobs}
+                    className="w-full py-2 bg-white border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors duration-200 font-medium"
+                  >
                     Apply Now
                   </button>
                 </div>
@@ -328,10 +328,16 @@ function Home() {
             employers.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button onClick={() => navigate("/register")} className="bounce-slow px-8 py-3 bg-white text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition duration-200">
+            <button
+              onClick={() => navigate("/register")}
+              className="bounce-slow px-8 py-3 bg-white text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition duration-200"
+            >
               Sign Up
             </button>
-            <button onClick={() => navigate("/login")} className="px-8 py-3 bg-transparent border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:bg-opacity-10 transition duration-200">
+            <button
+              onClick={() => navigate("/login")}
+              className="px-8 py-3 bg-transparent border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:bg-opacity-10 transition duration-200"
+            >
               Sign In
             </button>
           </div>

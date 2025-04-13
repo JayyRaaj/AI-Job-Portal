@@ -21,6 +21,14 @@ exports.uploadResume = async (req, res) => {
   });
 };
 
+exports.getLatestResume = (req, res) => {
+  Resume.getByUserId(req.params.userId, (err, results) => {
+    if (err || !results.length) return res.status(404).json({ error: 'Resume not found' });
+    res.json(results[0]);
+  });
+};
+
+
 function extractInsights(text) {
   return {
     name: (text.match(/[A-Z][a-z]+\s[A-Z][a-z]+/) || [])[0] || 'Not found',

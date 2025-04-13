@@ -25,7 +25,6 @@ function EmployerDashboard() {
   const token = sessionStorage.getItem("token");
   const [selectedApp, setSelectedApp] = useState(null);
 
-
   useEffect(() => {
     const fetchData = async () => {
       const headers = { Authorization: `Bearer ${token}` };
@@ -45,7 +44,6 @@ function EmployerDashboard() {
       const jobs = await jobsRes.json();
       const apps = await appsRes.json();
       const reminders = await remindersRes.json();
-
 
       setStats({
         active: jobs.length,
@@ -105,12 +103,11 @@ function EmployerDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {recentApps.map((app, i) => (
             <ApplicationCard
-            key={i}
-            name={app.applicant_name}
-            position={app.job_title}
-            onView={() => setSelectedApp(app)}
-          />
-          
+              key={i}
+              name={app.applicant_name}
+              position={app.job_title}
+              onView={() => setSelectedApp(app)}
+            />
           ))}
         </div>
       </section>
@@ -138,23 +135,52 @@ function EmployerDashboard() {
       </section>
       {selectedApp && (
         <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl">
-      <h2 className="text-xl font-bold mb-4">Application Details</h2>
-      <p><strong>Applicant:</strong> {selectedApp.applicant_name}</p>
-      <p><strong>Job Title:</strong> {selectedApp.job_title}</p>
-      <p><strong>Status:</strong> {selectedApp.status}</p>
-      <div className="text-right mt-6">
-        <button
-          onClick={() => setSelectedApp(null)}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700"
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl">
+            <h2 className="text-xl font-bold mb-4">Application Details</h2>
+            <p>
+              <strong>Applicant:</strong> {selectedApp.applicant_name}
+            </p>
+            <p>
+              <strong>Job Title:</strong> {selectedApp.job_title}
+            </p>
+            <p>
+              <strong>Status:</strong> {selectedApp.status}
+            </p>
 
+            <button
+              onClick={async () => {
+                const res = await fetch(
+                  `http://localhost:5000/api/resumes/${selectedApp.user_id}/latest`,
+                  {
+                    headers: { Authorization: `Bearer ${token}` },
+                  }
+                );
+                const data = await res.json();
+                if (data?.file_path) {
+                  window.open(
+                    `http://localhost:5000/${data.file_path}`,
+                    "_blank"
+                  );
+                } else {
+                  alert("Resume not found");
+                }
+              }}
+              className="mt-4 px-4 py-2 bg-gray-100 text-indigo-600 rounded-xl hover:bg-gray-200"
+            >
+              View Resume
+            </button>
+
+            <div className="text-right mt-6">
+              <button
+                onClick={() => setSelectedApp(null)}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </MainLayout>
   );
 }
@@ -178,9 +204,7 @@ const ApplicationCard = ({ name, position, onView }) => (
       View Application
     </button>
   </div>
-  
 );
-
 
 const InterviewItem = ({ name, date, time }) => (
   <li className="bg-white p-5 rounded-3xl border border-gray-100 shadow-md hover:shadow-lg transition">

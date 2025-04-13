@@ -13,6 +13,7 @@ const Resume = {
   getByUserId: (user_id, callback) => {
     db.query('SELECT * FROM Resumes WHERE user_id = ? ORDER BY uploaded_at DESC LIMIT 1', [user_id], callback);
   }
+  
 };
 
 module.exports = Resume;
