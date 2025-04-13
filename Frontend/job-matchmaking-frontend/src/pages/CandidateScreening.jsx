@@ -16,6 +16,7 @@ function CandidateScreening() {
   const [rating, setRating] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [statusMessages, setStatusMessages] = useState({});
 
   const getDefaultPlatformInfo = () => {
     const platforms = [
@@ -28,6 +29,8 @@ function CandidateScreening() {
 
   const formatDateTime = (date) =>
     date.toISOString().slice(0, 19).replace("T", " ");
+
+  const [message, setMessage] = useState("");
 
   const handleScheduleInterview = async (candidate) => {
     const token = sessionStorage.getItem("token");
@@ -54,9 +57,22 @@ function CandidateScreening() {
       });
 
       if (!res.ok) throw new Error("Failed to schedule interview");
-      alert("Interview scheduled.");
+
+      setStatusMessages((prev) => ({
+        ...prev,
+        [candidate.id]: {
+          type: "success",
+          text: "Interview scheduled successfully.",
+        },
+      }));
     } catch (err) {
-      console.error("Error:", err);
+      setStatusMessages((prev) => ({
+        ...prev,
+        [candidate.id]: {
+          type: "error",
+          text: "Failed to schedule interview.",
+        },
+      }));
     }
   };
 
@@ -67,9 +83,12 @@ function CandidateScreening() {
     const fetchScreenings = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch(`http://localhost:5000/api/screenings/employer/${employerId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch(
+          `http://localhost:5000/api/screenings/employer/${employerId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         if (!res.ok) {
           throw new Error("Failed to fetch screenings");
@@ -232,8 +251,16 @@ function CandidateScreening() {
                   <FileText className="w-4 h-4" />
                   View Details
                 </button>
+                {statusMessages[candidate.id] && (
+                  <p
+                    className={`text-sm mt-2 ${statusMessages[candidate.id].type === "error" ? "text-red-600" : "text-green-600"}`}
+                  >
+                    {statusMessages[candidate.id].text}
+                  </p>
+                )}
+
                 {showModal && selectedCandidate && (
-                  <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
+        <div className="fixed inset-0 backdrop-blur-sm bg-white/10 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-xl">
                       <h2 className="text-xl font-bold mb-4">
                         Candidate #{selectedCandidate.application_id}
