@@ -1,6 +1,7 @@
 import MainLayout from "../layouts/MainLayout";
-import { Search, MapPin, Briefcase, Star, Clock } from "lucide-react";
+import { Search, MapPin, Briefcase, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Dialog } from "@headlessui/react";
 
 function JobRecommendations() {
   const [expanded, setExpanded] = useState(null);
@@ -8,9 +9,56 @@ function JobRecommendations() {
   const [searchTerm, setSearchTerm] = useState("");
   const [experienceFilter, setExperienceFilter] = useState("");
   const [sortOption, setSortOption] = useState("Relevance");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [coverLetter, setCoverLetter] = useState("");
+  const [resumeFile, setResumeFile] = useState(null);
+  const [appliedJobId, setAppliedJobId] = useState(null);
 
   const toggleExpand = (id) => {
     setExpanded(expanded === id ? null : id);
+  };
+
+  const handleSubmitApplication = async () => {
+    const userId = sessionStorage.getItem("userId");
+    const token = sessionStorage.getItem("token");
+    let resumeId = null;
+
+    if (resumeFile) {
+      const formData = new FormData();
+      formData.append("resume", resumeFile);
+
+      const resUpload = await fetch(
+        `http://localhost:5000/api/resumes/${userId}`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        }
+      );
+
+      const dataUpload = await resUpload.json();
+      resumeId = dataUpload.resume_id;
+    }
+
+    await fetch("http://localhost:5000/api/applications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        job_id: selectedJob.id,
+        user_id: userId,
+        resume_id: resumeId,
+        cover_letter: coverLetter,
+      }),
+    });
+
+    setIsModalOpen(false);
+    setCoverLetter("");
+    setResumeFile(null);
+    setAppliedJobId(selectedJob.id);
   };
 
   const filteredJobs = jobs
@@ -24,9 +72,7 @@ function JobRecommendations() {
     )
     .filter((job) => {
       if (!experienceFilter) return true;
-
       const exp = job.experience_required;
-
       if (experienceFilter === "Entry")
         return exp?.includes("0-1") || exp?.startsWith("1");
       if (experienceFilter === "Mid")
@@ -46,19 +92,13 @@ function JobRecommendations() {
 
   useEffect(() => {
     const fetchJobs = async () => {
-      const userId = sessionStorage.getItem("userId");
       const token = sessionStorage.getItem("token");
-
-      const res = await fetch(`http://localhost:5000/api/jobs`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await fetch("http://localhost:5000/api/jobs", {
+        headers: { Authorization: `Bearer ${token}` },
       });
-
       const data = await res.json();
       setJobs(data);
     };
-
     fetchJobs();
   }, []);
 
@@ -113,7 +153,11 @@ function JobRecommendations() {
           {filteredJobs.map((job) => (
             <div
               key={job.id}
-              className={`bg-white rounded-2xl shadow-sm overflow-hidden transition-all duration-300 ${expanded === job.id ? "ring-2 ring-primary/30" : "hover:shadow-md"}`}
+              className={`bg-white rounded-2xl shadow-sm overflow-hidden transition-all duration-300 ${
+                expanded === job.id
+                  ? "ring-2 ring-primary/30"
+                  : "hover:shadow-md"
+              }`}
             >
               <div
                 className="p-6 cursor-pointer"
@@ -123,7 +167,6 @@ function JobRecommendations() {
                   <div>
                     <div className="flex items-center gap-2">
                       <h2 className="text-xl font-semibold">{job.title}</h2>
-                      
                     </div>
                     <div className="flex items-center gap-4 mt-1 text-gray-600">
                       <p className="text-sm font-medium">{job.company}</p>
@@ -164,8 +207,9 @@ function JobRecommendations() {
               {expanded === job.id && (
                 <div className="border-t border-gray-100 p-6 bg-gray-50">
                   <p className="text-gray-700 mb-6">{job.description}</p>
-                  <div className="flex flex-wrap gap-3">
-                    <div className="flex items-center gap-3 text-sm text-gray-600">
+
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div className="flex flex-wrap gap-3 text-sm text-gray-600">
                       <span>Experience: {job.experience_required}</span>
                       <span>Education: {job.education_required}</span>
                       <span>Industry: {job.industry}</span>
@@ -174,19 +218,69 @@ function JobRecommendations() {
                         Deadline: {new Date(job.deadline).toLocaleDateString()}
                       </span>
                     </div>
-                    <button className="px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary/90 transition flex items-center gap-2">
-                      <Briefcase size={16} />
-                      Apply Now
+                    <button
+                      className="px-5 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition text-sm"
+                      onClick={() => {
+                        setSelectedJob(job);
+                        setIsModalOpen(true);
+                      }}
+                    >
+                      Apply
                     </button>
-                    
-                   
                   </div>
+                  {appliedJobId === job.id && (
+                <p className="text-green-600 text-sm mt-4">
+                  Application submitted successfully!
+                </p>
+              )}
                 </div>
               )}
+             
             </div>
           ))}
         </div>
       </div>
+
+      <Dialog
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        className="relative z-50"
+      >
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="w-full max-w-lg rounded-xl bg-white p-6">
+            <Dialog.Title className="text-xl font-semibold mb-4">
+              Apply to {selectedJob?.title}
+            </Dialog.Title>
+            <textarea
+              rows={4}
+              placeholder="Cover Letter"
+              value={coverLetter}
+              onChange={(e) => setCoverLetter(e.target.value)}
+              className="w-full border rounded-xl p-3 mb-4"
+            />
+            <input
+              type="file"
+              onChange={(e) => setResumeFile(e.target.files[0])}
+              className="mb-4"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 rounded-lg border"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmitApplication}
+                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+              >
+                Submit Application
+              </button>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
     </MainLayout>
   );
 }
