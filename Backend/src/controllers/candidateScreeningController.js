@@ -45,9 +45,9 @@ exports.createScreening = async (req, res) => {
     const { application_id, score, remarks, evaluation_criteria, screened_by } = req.body;
     
     // Validation
-    if (!application_id || !evaluation_criteria || !screened_by) {
+    if (!application_id || !screened_by) {
       return res.status(400).json({ 
-        message: 'Missing required fields (application_id, evaluation_criteria, screened_by)'
+        message: 'Missing required fields (application_id, screened_by)'
       });
     }
     
