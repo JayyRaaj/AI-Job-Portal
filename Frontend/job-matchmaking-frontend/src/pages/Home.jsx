@@ -83,7 +83,6 @@ function Home() {
   return (
     <div>
       <section className="bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white min-h-screen relative overflow-hidden">
-        Abstract background elements
         <div className="absolute -top-20 -right-20 w-64 h-64 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full blur-3xl opacity-20"></div>
         <div className="absolute top-1/2 -left-32 w-64 h-64 bg-gradient-to-r from-blue-600 to-cyan-400 rounded-full blur-3xl opacity-10"></div>
         <div className="absolute -bottom-16 right-1/3 w-80 h-80 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full blur-3xl opacity-10"></div>
