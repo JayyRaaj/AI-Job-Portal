@@ -226,18 +226,16 @@ function JobseekerDashboard() {
               {new Date(selectedJob.recommended_at).toLocaleDateString()}
             </p>
             <button
-  onClick={() => {
-    setSelectedJob(null);
-    window.open("/job-recommendations", "_blank");
-
-  }}
-  className={`mt-6 w-full py-2 px-4 rounded-xl font-semibold text-white ${
-    applied ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"
-  }`}
->
-  {applied ? "Apply" : "Apply"}
-</button>
-
+              onClick={() => {
+                setSelectedJob(null);
+                window.open("/job-recommendations", "_blank");
+              }}
+              className={`mt-6 w-full py-2 px-4 rounded-xl font-semibold text-white ${
+                applied ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"
+              }`}
+            >
+              {applied ? "Apply" : "Apply"}
+            </button>
           </div>
         </div>
       )}

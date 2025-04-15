@@ -214,13 +214,13 @@ function JobRecommendations() {
                       <span>Education: {job.education_required}</span>
                       <span>Industry: {job.industry}</span>
                       <span>{job.remote === 1 ? "Remote" : "On-site"}</span>
-                      <span>
-  Deadline:{" "}
-  {job.deadline
-    ? new Date(job.deadline).toLocaleDateString()
-    : "No deadline"}
-</span>
 
+                      <span>
+                        Deadline:{" "}
+                        {job.deadline
+                          ? new Date(job.deadline).toLocaleDateString()
+                          : "No deadline"}
+                      </span>
                     </div>
                     <button
                       className="px-5 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition text-sm"
@@ -233,13 +233,12 @@ function JobRecommendations() {
                     </button>
                   </div>
                   {appliedJobId === job.id && (
-                <p className="text-green-600 text-sm mt-4">
-                  Application submitted successfully!
-                </p>
-              )}
+                    <p className="text-green-600 text-sm mt-4">
+                      Application submitted successfully!
+                    </p>
+                  )}
                 </div>
               )}
-             
             </div>
           ))}
         </div>
