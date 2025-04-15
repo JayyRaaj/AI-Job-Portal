@@ -193,7 +193,7 @@ function CandidateScreening() {
                 <UserCircle2 className="w-10 h-10 text-indigo-500" />
                 <div>
                   <h2 className="text-xl font-semibold text-gray-800">
-                    Candidate #{candidate.application_id}
+                  {candidate.applicant_name || `Candidate #${candidate.application_id}`}
                   </h2>
                   <p className="text-sm text-gray-500">
                     Test: {candidate.evaluation_criteria || "Not specified"}

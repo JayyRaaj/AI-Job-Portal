@@ -145,7 +145,7 @@ function JobManagement() {
             name="salary_max"
             value={form.salary_max}
             type="text"
-            placeholder="Salary Range"
+            placeholder="Max Salary"
             className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
             onChange={handleChange}
           />
