@@ -1,9 +1,14 @@
 import MainLayout from "../layouts/MainLayout";
 import { UserCog, Settings2, ShieldCheck, Save } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Dialog } from "@headlessui/react";
+
 
 function Profile() {
   const userId = sessionStorage.getItem("userId");
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+const [saveMessage, setSaveMessage] = useState("");
+
 
   const [profile, setProfile] = useState({
  
@@ -46,8 +51,14 @@ function Profile() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(profile),
     });
-    if (res.ok) {}
-    else alert("Save failed");
+    if (res.ok) {
+      setSaveMessage(" Profile saved successfully.");
+    } else {
+      setSaveMessage(" Failed to save profile.");
+    }
+    setIsSaveModalOpen(true);
+    setTimeout(() => setIsSaveModalOpen(false), 3000);
+    
   };
 
   useEffect(() => {
@@ -190,8 +201,25 @@ function Profile() {
           Save Changes
         </button>
       </div>
+      <Dialog
+  open={isSaveModalOpen}
+  onClose={() => setIsSaveModalOpen(false)}
+  className="relative z-50"
+>
+  <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+  <div className="fixed inset-0 flex items-center justify-center p-4">
+    <Dialog.Panel className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl text-center">
+      <Dialog.Title className="text-lg font-semibold text-gray-800">
+        {saveMessage}
+      </Dialog.Title>
+    </Dialog.Panel>
+  </div>
+</Dialog>
+
     </MainLayout>
+    
   );
+  
 }
 
 export default Profile;
