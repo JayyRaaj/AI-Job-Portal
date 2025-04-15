@@ -215,8 +215,12 @@ function JobRecommendations() {
                       <span>Industry: {job.industry}</span>
                       <span>{job.remote === 1 ? "Remote" : "On-site"}</span>
                       <span>
-                        Deadline: {new Date(job.deadline).toLocaleDateString()}
-                      </span>
+  Deadline:{" "}
+  {job.deadline
+    ? new Date(job.deadline).toLocaleDateString()
+    : "No deadline"}
+</span>
+
                     </div>
                     <button
                       className="px-5 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition text-sm"

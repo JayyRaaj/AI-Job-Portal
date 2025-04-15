@@ -71,7 +71,7 @@ function JobManagement() {
       );
       setJobs(await updated.json());
     
-      setFormMessage(editingId ? " Job updated successfully." : " Job posted successfully.");
+      setFormMessage(editingId ? "    Job updated successfully." : "     Job posted successfully.");
       setTimeout(() => setFormMessage(""), 3000);
     } else {
       setFormMessage(" Failed to submit job.");
