@@ -17,6 +17,8 @@ function JobManagement() {
   const [expandedJob, setExpandedJob] = useState(null);
   const [applicants, setApplicants] = useState({});
   const formRef = useRef(null);
+  const [formMessage, setFormMessage] = useState("");
+
 
   const [editingId, setEditingId] = useState(null);
 
@@ -68,9 +70,15 @@ function JobManagement() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setJobs(await updated.json());
+    
+      setFormMessage(editingId ? " Job updated successfully." : " Job posted successfully.");
+      setTimeout(() => setFormMessage(""), 3000);
     } else {
-      alert("Failed to submit job");
+      setFormMessage(" Failed to submit job.");
+      setTimeout(() => setFormMessage(""), 3000);
     }
+    
+    
   };
 
   const handleDelete = async (id) => {
@@ -81,7 +89,17 @@ function JobManagement() {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (res.ok) setJobs(jobs.filter((j) => j.id !== id));
+    if (res.ok) {
+      setJobs(jobs.filter((j) => j.id !== id));
+      setJobMessages((prev) => ({
+        ...prev,
+        [id]: " Job deleted successfully.",
+      }));
+      setTimeout(() => {
+        setJobMessages((prev) => ({ ...prev, [id]: "" }));
+      }, 3000);
+    }
+    
   };
 
   return (
@@ -157,6 +175,10 @@ function JobManagement() {
             </button>
           </div>
         </form>
+        {formMessage && (
+  <p className="text-sm text-red-600 mt-4">{formMessage}</p>
+)}
+
       </section>
 
       <section>
@@ -204,6 +226,8 @@ function JobManagement() {
                   </button>
                 </div>
               </div>
+              
+
 
               <div className="mt-4">
                 <button

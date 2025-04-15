@@ -2,7 +2,7 @@ const db = require('../config/db');
 
 const Job = {
   create: (data, cb) => {
-    const { title, location, salary_max, type, description, employer_id } = data; // ✅ ADD employer_id
+    const { title, location, salary_max, type, description, employer_id } = data; 
     const sql = `
       INSERT INTO jobs (title, location, salary_max, type, description, employer_id, posted_at)
       VALUES (?, ?, ?, ?, ?, ?, NOW())

@@ -25,8 +25,7 @@ function EmployerDashboard() {
   const token = sessionStorage.getItem("token");
   const [selectedApp, setSelectedApp] = useState(null);
   const [resumeError, setResumeError] = useState("");
-  const [actionMessage, setActionMessage] = useState("");
-
+  const [localMessage, setLocalMessage] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -154,68 +153,75 @@ function EmployerDashboard() {
             </p>
 
             <div className="mt-4 flex gap-4">
-  <button
-    onClick={async () => {
-      setResumeError("");
-      const res = await fetch(
-        `http://localhost:5000/api/resumes/${selectedApp.user_id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const data = await res.json();
-      if (data?.file_path) {
-        const fileExists = await fetch(
-          `http://localhost:5000/${data.file_path}`
-        );
-        if (fileExists.ok) {
-          window.open(
-            `http://localhost:5000/${data.file_path}`,
-            "_blank"
-          );
-        } else {
-          setResumeError("Resume file is missing.");
-        }
-      } else {
-        setResumeError("Resume not found.");
-      }
-    }}
-    className="px-4 py-2 bg-gray-100 text-indigo-600 rounded-xl hover:bg-gray-200"
-  >
-    View Resume
-  </button>
+              <button
+                onClick={async () => {
+                  setResumeError("");
+                  const res = await fetch(
+                    `http://localhost:5000/api/resumes/${selectedApp.user_id}`,
+                    {
+                      headers: { Authorization: `Bearer ${token}` },
+                    }
+                  );
+                  const data = await res.json();
+                  if (data?.file_path) {
+                    const fileExists = await fetch(
+                      `http://localhost:5000/${data.file_path}`
+                    );
+                    if (fileExists.ok) {
+                      window.open(
+                        `http://localhost:5000/${data.file_path}`,
+                        "_blank"
+                      );
+                    } else {
+                      setResumeError("Resume file is missing.");
+                    }
+                  } else {
+                    setResumeError("Resume not found.");
+                  }
+                }}
+                className="px-4 py-2 bg-gray-100 text-indigo-600 rounded-xl hover:bg-gray-200"
+              >
+                View Resume
+              </button>
 
-  <button
-  onClick={async () => {
-    const res = await fetch("http://localhost:5000/api/screenings", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        application_id: selectedApp.id,
-        score: null,
-        remarks: null,
-        evaluation_criteria: null,
-        screened_by: employerId,
-      }),
-    });
-  
-    if (res.ok) {
-      setActionMessage("✅ Screening record created successfully.");
-    } else {
-      setActionMessage("❌ Failed to create screening record.");
-    }
-  }}
-  
-  className="px-4 py-2 bg-green-100 text-green-700 rounded-xl hover:bg-green-200"
->
-  Screen Now
-</button>
-  
-</div>
+              <button
+                onClick={async () => {
+                  const res = await fetch(
+                    "http://localhost:5000/api/screenings",
+                    {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                      },
+                      body: JSON.stringify({
+                        application_id: selectedApp.id,
+                        score: null,
+                        remarks: null,
+                        evaluation_criteria: null,
+                        screened_by: employerId,
+                      }),
+                    }
+                  );
 
+                  if (res.ok) {
+                    setLocalMessage(
+                      " Screening record created successfully."
+                    );
+                  } else {
+                    setLocalMessage("❌ Failed to create screening record.");
+                  }
+
+                  setTimeout(() => setLocalMessage(""), 3000); // hide after 3 sec
+                }}
+                className="px-4 py-2 bg-green-100 text-green-700 rounded-xl hover:bg-green-200"
+              >
+                Screen Now
+              </button>
+            </div>
+            {localMessage && (
+              <p className="text-sm text-red-600 mt-2">{localMessage}</p>
+            )}
 
             {resumeError && (
               <p className="text-red-600 text-sm mt-2">{resumeError}</p>
