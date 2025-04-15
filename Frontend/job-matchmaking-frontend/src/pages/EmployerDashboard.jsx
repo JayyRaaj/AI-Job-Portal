@@ -209,7 +209,7 @@ function EmployerDashboard() {
                       " Screening record created successfully."
                     );
                   } else {
-                    setLocalMessage("❌ Failed to create screening record.");
+                    setLocalMessage(" Failed to create screening record.");
                   }
 
                   setTimeout(() => setLocalMessage(""), 3000); // hide after 3 sec

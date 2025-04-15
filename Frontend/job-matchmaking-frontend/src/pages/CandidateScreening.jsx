@@ -260,7 +260,7 @@ function CandidateScreening() {
                 )}
 
                 {showModal && selectedCandidate && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-white/10 flex justify-center items-center z-50">
+                  <div className="fixed inset-0 backdrop-blur-sm bg-white/10 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-xl">
                       <h2 className="text-xl font-bold mb-4">
                         Candidate #{selectedCandidate.application_id}
