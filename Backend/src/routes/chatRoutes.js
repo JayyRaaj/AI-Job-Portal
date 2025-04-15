@@ -17,9 +17,9 @@ ${userMessage}
 
   try {
     const response = await axios.post(
-      'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
+      'https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta',
       { inputs: prompt },
-      { headers: { Authorization: `Bearer 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`, 'Content-Type': 'application/json' } }
+      { headers: { Authorization: `Bearer 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`, 'Content-Type': 'application/json' } }
     );
 
     const botReply = response.data?.[0]?.generated_text || 'Sorry, I couldn’t understand that.';
