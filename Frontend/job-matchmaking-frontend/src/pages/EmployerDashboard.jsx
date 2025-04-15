@@ -25,6 +25,8 @@ function EmployerDashboard() {
   const token = sessionStorage.getItem("token");
   const [selectedApp, setSelectedApp] = useState(null);
   const [resumeError, setResumeError] = useState("");
+  const [actionMessage, setActionMessage] = useState("");
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -185,7 +187,7 @@ function EmployerDashboard() {
 
   <button
   onClick={async () => {
-    await fetch("http://localhost:5000/api/screenings", {
+    const res = await fetch("http://localhost:5000/api/screenings", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -199,10 +201,14 @@ function EmployerDashboard() {
         screened_by: employerId,
       }),
     });
-    
-    
-    alert("Screening record created.");
+  
+    if (res.ok) {
+      setActionMessage("✅ Screening record created successfully.");
+    } else {
+      setActionMessage("❌ Failed to create screening record.");
+    }
   }}
+  
   className="px-4 py-2 bg-green-100 text-green-700 rounded-xl hover:bg-green-200"
 >
   Screen Now
