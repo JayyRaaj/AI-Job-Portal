@@ -149,6 +149,16 @@ const StatCard = ({ icon, label, value }) => (
 const AdminCard = ({ title, users = [] }) => {
   const [open, setOpen] = useState(false);
 
+  const handleDelete = async (id) => {
+    const token = sessionStorage.getItem("token");
+    await fetch(`http://localhost:5000/api/admin/users/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    // Optional: remove user from state
+  };
+  
+
   return (
     <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-md hover:shadow-lg transition">
       <h3 className="text-lg font-semibold text-gray-800 mb-1">{title}</h3>
@@ -177,8 +187,16 @@ const AdminCard = ({ title, users = [] }) => {
                   </span>
                 )}
               </div>
+              <button
+  onClick={() => handleDelete(u.id)}
+  className="text-xs text-red-600 hover:underline self-start"
+>
+  Delete
+</button>
+
             </li>
           ))}
+          
         </ul>
       )}
     </div>
