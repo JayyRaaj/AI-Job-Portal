@@ -103,8 +103,9 @@ useEffect(() => {
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <AdminCard title="Manage Jobseekers" users={jobseekers} />
-<AdminCard title="Manage Employers" users={employers} />
+        <AdminCard title="Manage Jobseekers" users={jobseekers} setUsers={setJobseekers} />
+<AdminCard title="Manage Employers" users={employers} setUsers={setEmployers} />
+
 
         </div>
       </section>
@@ -146,8 +147,10 @@ const StatCard = ({ icon, label, value }) => (
   </div>
 );
 
-const AdminCard = ({ title, users = [] }) => {
+const AdminCard = ({ title, users = [], setUsers }) => {
   const [open, setOpen] = useState(false);
+
+  
 
   const handleDelete = async (id) => {
     const token = sessionStorage.getItem("token");
@@ -155,7 +158,8 @@ const AdminCard = ({ title, users = [] }) => {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
-    // Optional: remove user from state
+    // Update UI
+    setUsers((prev) => prev.filter((u) => (u.user_id || u.employer_id) !== id));
   };
   
 
@@ -188,8 +192,8 @@ const AdminCard = ({ title, users = [] }) => {
                 )}
               </div>
               <button
-  onClick={() => handleDelete(u.id)}
-  className="text-xs text-red-600 hover:underline self-start"
+onClick={() => handleDelete(u.user_id || u.employer_id)}
+className="text-xs text-red-600 hover:underline self-start"
 >
   Delete
 </button>

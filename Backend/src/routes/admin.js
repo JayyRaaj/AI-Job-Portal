@@ -36,6 +36,18 @@ WHERE u.role = 'Employer'
 GROUP BY u.id, u.name;`);
     res.json(rows);
   });
+
+  // DELETE /api/admin/users/:id
+router.delete("/users/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.promise().execute("DELETE FROM users WHERE id = ?", [id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+});
+
   
   
 module.exports = router;
