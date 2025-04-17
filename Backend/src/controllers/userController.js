@@ -37,4 +37,24 @@ exports.login = (req, res) => {
       });
     });
   };
+
+  exports.resetPassword = (req, res) => {
+    const { email, newPassword } = req.body;
+    if (!email || !newPassword) {
+      return res.status(400).json({ error: "Email and new password required" });
+    }
+  
+    User.findByEmail(email, (err, results) => {
+      if (err || results.length === 0) {
+        return res.status(404).json({ error: "User not found" });
+      }
+  
+      User.updatePassword(email, newPassword, (err2, updateResult) => {
+        if (err2) {
+          return res.status(500).json({ error: "Failed to update password" });
+        }
+        res.status(200).json({ message: "Password reset successful" });
+      });
+    });
+  };
   

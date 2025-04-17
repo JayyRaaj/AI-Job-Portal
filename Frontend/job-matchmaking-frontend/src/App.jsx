@@ -14,6 +14,8 @@ import InterviewReminders from "./pages/InterviewReminders";
 import MarketInsights from "./pages/MarketInsights";
 import JobManagement from "./pages/JobManagement";
 import CandidateScreening from "./pages/CandidateScreening";
+import ForgotPassword from "./pages/ForgotPassword";
+
 import { Navigate } from "react-router-dom";
 
 function App() {
@@ -54,6 +56,7 @@ function App() {
         <Route path="/market-insights" element={<MarketInsights />} />
         <Route path="/job-management" element={<JobManagement />} />
         <Route path="/candidate-screening" element={<CandidateScreening />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </Router>
   );

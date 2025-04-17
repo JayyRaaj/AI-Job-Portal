@@ -14,7 +14,12 @@ const User = {
 
   findById: (id, callback) => {
     db.query('SELECT * FROM Users WHERE id = ?', [id], callback);
+  },
+
+  updatePassword: (email, newPassword, callback) => {
+    db.query('UPDATE Users SET password = ? WHERE email = ?', [newPassword, email], callback);
   }
 };
+
 
 module.exports = User;

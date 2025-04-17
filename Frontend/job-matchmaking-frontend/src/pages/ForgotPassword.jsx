@@ -1,54 +1,37 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
-function Login() {
+function ForgotPassword() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [dob, setDob] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = sessionStorage.getItem("token");
-    const role = sessionStorage.getItem("role");
-
-    if (token) {
-      if (role === "jobseeker") navigate("/dashboard/jobseeker");
-      else if (role === "employer") navigate("/dashboard/employer");
-      else if (role === "admin") navigate("/dashboard/admin");
-    }
-  }, [navigate]);
-
-  const handleLogin = async (e) => {
+  const handlePasswordReset = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setIsLoading(true);
     
     try {
-      const res = await fetch("http://localhost:5000/api/users/login", {
+      const res = await fetch("http://localhost:5000/api/users/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, newPassword }),
       });
       const data = await res.json();
       
       if (res.ok) {
-        sessionStorage.setItem("token", data.token);
-        sessionStorage.setItem("userId", data.user.id);
-        sessionStorage.setItem("role", data.user.role);
-
-        if (data.user.role === "jobseeker") {
-          navigate("/dashboard/jobseeker");
-        } else if (data.user.role === "employer") {
-          navigate("/dashboard/employer");
-        } else if (data.user.role === "admin") {
-          navigate("/dashboard/admin");
-        }
-        console.log(data.user);
+        setSuccess("Password reset successful! You can now login with your new password.");
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000);
       } else {
-        setError(data.error || "Invalid credentials. Please try again.");
+        setError(data.error || "Password reset failed. Please verify your information.");
       }
     } catch (err) {
       setError("Connection error. Please check your internet connection and try again.");
@@ -70,6 +53,7 @@ function Login() {
       <div className="max-w-md w-full bg-white bg-opacity-95 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden">
         <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-8 px-8">
           <h2 className="text-3xl font-bold text-center">Skill sync</h2>
+          <p className="text-center mt-2">Reset Your Password</p>
         </div>
 
         <div className="px-8 py-10">
@@ -87,8 +71,23 @@ function Login() {
               </div>
             </div>
           )}
+
+          {success && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm">{success}</p>
+                </div>
+              </div>
+            </div>
+          )}
           
-          <form className="space-y-6" onSubmit={handleLogin}>
+          <form className="space-y-6" onSubmit={handlePasswordReset}>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <div className="relative">
@@ -109,8 +108,10 @@ function Login() {
               </div>
             </div>
             
+          
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -120,8 +121,8 @@ function Login() {
                 <input
                   type="password"
                   placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 />
@@ -133,31 +134,24 @@ function Login() {
               disabled={isLoading}
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-lg font-medium text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 disabled:opacity-70"
             >
-              
               {isLoading ? (
                 <span className="flex items-center">
                   <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Signing in...
+                  Resetting Password...
                 </span>
               ) : (
-                "Sign In"
+                "Reset Password"
               )}
             </button>
 
-            <div className="text-center text-sm mt-4">
-  <Link to="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
-    Forgot password?
-  </Link>
-</div>
-
             <div className="text-center text-sm">
               <p className="text-gray-600">
-                Don't have an account?{" "}
-                <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
-                  Sign up now
+                Remember your password?{" "}
+                <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+                  Back to login
                 </Link>
               </p>
             </div>
@@ -168,4 +162,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default ForgotPassword;
