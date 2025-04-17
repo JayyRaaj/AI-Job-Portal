@@ -59,7 +59,11 @@ function Navbar() {
           </>
         )}
 
-        {role === "admin" && <NavItem to="/dashboard/admin" label="Admin" />}
+        {role === "admin" && (
+          <>
+          <NavItem to="/dashboard/admin" label="Admin" />
+          <NavItem to="/admin/stats" label="Stats" />
+          </>)}
 
         {/* Right section */}
         <div className="flex gap-3 text-sm">
