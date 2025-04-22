@@ -134,7 +134,8 @@ function EmployerDashboard() {
                 hour: "2-digit",
                 minute: "2-digit",
               })}
-            />
+              link={i.meeting_link}
+              />
           ))}
         </ul>
       </section>
@@ -205,9 +206,7 @@ function EmployerDashboard() {
                   );
 
                   if (res.ok) {
-                    setLocalMessage(
-                      " Screening record created successfully."
-                    );
+                    setLocalMessage(" Screening record created successfully.");
                   } else {
                     setLocalMessage(" Failed to create screening record.");
                   }
@@ -263,12 +262,22 @@ const ApplicationCard = ({ name, position, onView }) => (
   </div>
 );
 
-const InterviewItem = ({ name, date, time }) => (
+const InterviewItem = ({ name, date, time, link }) => (
   <li className="bg-white p-5 rounded-3xl border border-gray-100 shadow-md hover:shadow-lg transition">
     <p className="text-gray-800 font-semibold">{name}</p>
     <p className="text-sm text-gray-500">
       {date}, {time}
     </p>
+    {link && (
+      <a
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-sm text-indigo-600 hover:underline mt-1 block"
+      >
+        Join Interview
+      </a>
+    )}
   </li>
 );
 

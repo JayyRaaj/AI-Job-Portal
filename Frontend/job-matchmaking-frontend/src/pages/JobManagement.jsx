@@ -40,8 +40,21 @@ function JobManagement() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const validateForm = () => {
+    const requiredFields = ["title", "location", "salary_max", "description"];
+    for (let field of requiredFields) {
+      if (!form[field].trim()) {
+        setFormMessage(`${field.charAt(0).toUpperCase() + field.slice(1)} is required.`);
+        return false;
+      }
+    }
+    return true;
+  };
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
     const url = editingId
       ? `http://localhost:5000/api/jobs/${editingId}`
       : `http://localhost:5000/api/jobs`;

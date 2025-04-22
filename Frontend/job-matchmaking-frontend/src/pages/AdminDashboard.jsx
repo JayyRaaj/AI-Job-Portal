@@ -19,53 +19,39 @@ function AdminDashboard() {
     reports: 0,
   });
 
+  const [jobseekers, setJobseekers] = useState([]);
+  const [employers, setEmployers] = useState([]);
   useEffect(() => {
+    const token = sessionStorage.getItem("token");
+
     const fetchStats = async () => {
-      const token = sessionStorage.getItem("token");
       const res = await fetch("http://localhost:5000/api/admin/stats", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       setStats(data);
     };
+
+    const fetchUsers = async () => {
+      const res1 = await fetch("http://localhost:5000/api/admin/jobseekers", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const res2 = await fetch("http://localhost:5000/api/admin/employers", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setJobseekers(await res1.json());
+      setEmployers(await res2.json());
+    };
+
     fetchStats();
+    fetchUsers();
   }, []);
-  const [jobseekers, setJobseekers] = useState([]);
-const [employers, setEmployers] = useState([]);
-useEffect(() => {
-  const token = sessionStorage.getItem("token");
-
-  const fetchStats = async () => {
-    const res = await fetch("http://localhost:5000/api/admin/stats", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await res.json();
-    setStats(data);
-  };
-
-  const fetchUsers = async () => {
-    const res1 = await fetch("http://localhost:5000/api/admin/jobseekers", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const res2 = await fetch("http://localhost:5000/api/admin/employers", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setJobseekers(await res1.json());
-    setEmployers(await res2.json());
-  };
-
-  fetchStats();
-  fetchUsers();
-}, []);
-
 
   return (
-
-    
     <MainLayout>
       <div className="mb-10">
         <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
-           Admin Dashboard
+          Admin Dashboard
         </h1>
         <p className="text-lg text-gray-500 mt-1">
           System overview and user management tools.
@@ -103,10 +89,16 @@ useEffect(() => {
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <AdminCard title="Manage Jobseekers" users={jobseekers} setUsers={setJobseekers} />
-<AdminCard title="Manage Employers" users={employers} setUsers={setEmployers} />
-
-
+          <AdminCard
+            title="Manage Jobseekers"
+            users={jobseekers}
+            setUsers={setJobseekers}
+          />
+          <AdminCard
+            title="Manage Employers"
+            users={employers}
+            setUsers={setEmployers}
+          />
         </div>
       </section>
 
@@ -150,8 +142,6 @@ const StatCard = ({ icon, label, value }) => (
 const AdminCard = ({ title, users = [], setUsers }) => {
   const [open, setOpen] = useState(false);
 
-  
-
   const handleDelete = async (id) => {
     const token = sessionStorage.getItem("token");
     await fetch(`http://localhost:5000/api/admin/users/${id}`, {
@@ -161,7 +151,6 @@ const AdminCard = ({ title, users = [], setUsers }) => {
     // Update UI
     setUsers((prev) => prev.filter((u) => (u.user_id || u.employer_id) !== id));
   };
-  
 
   return (
     <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-md hover:shadow-lg transition">
@@ -192,22 +181,18 @@ const AdminCard = ({ title, users = [], setUsers }) => {
                 )}
               </div>
               <button
-onClick={() => handleDelete(u.user_id || u.employer_id)}
-className="text-xs text-red-600 hover:underline self-start"
->
-  Delete
-</button>
-
+                onClick={() => handleDelete(u.user_id || u.employer_id)}
+                className="text-xs text-red-600 hover:underline self-start"
+              >
+                Delete
+              </button>
             </li>
           ))}
-          
         </ul>
       )}
     </div>
   );
 };
-
-
 
 const StatusItem = ({ label, status, icon }) => (
   <li className="bg-white p-5 rounded-3xl border border-gray-100 shadow-md flex items-center gap-3 hover:shadow-lg transition">
