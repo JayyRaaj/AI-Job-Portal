@@ -55,3 +55,5 @@ app.use("/api/reminders", reminderRoutes);
 const chatRoute = require('./routes/chatRoutes.js');
 app.use('/api/chat', chatRoute);
 
+app.use('/api', require('./routes/userRoutes'));
+

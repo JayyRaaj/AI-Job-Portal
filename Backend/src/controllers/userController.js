@@ -58,3 +58,26 @@ exports.login = (req, res) => {
     });
   };
   
+  exports.updateName = (req, res) => {
+    const { id } = req.params;
+    const { name } = req.body;
+  
+    if (!name || name.trim() === "") {
+      return res.status(400).json({ error: "Name is required" });
+    }
+  
+    User.updateName(id, name, (err, result) => {
+      if (err) return res.status(500).json({ error: "Failed to update name" });
+      res.status(200).json({ message: "Name updated successfully" });
+    });
+  };
+  
+  exports.getUser = (req, res) => {
+    const { id } = req.params;
+    User.findById(id, (err, results) => {
+      if (err || results.length === 0) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      res.status(200).json(results[0]);
+    });
+  };

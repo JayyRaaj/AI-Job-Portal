@@ -18,7 +18,11 @@ const User = {
 
   updatePassword: (email, newPassword, callback) => {
     db.query('UPDATE Users SET password = ? WHERE email = ?', [newPassword, email], callback);
+  },
+  updateName: (id, name, callback) => {
+    db.query('UPDATE Users SET name = ? WHERE id = ?', [name, id], callback);
   }
+
 };
 
 
