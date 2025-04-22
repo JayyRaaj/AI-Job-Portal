@@ -25,6 +25,7 @@ function JobseekerDashboard() {
   const [selectedJob, setSelectedJob] = useState(null);
   const [selectedInterview, setSelectedInterview] = useState(null);
   const [applied, setApplied] = useState(false);
+  const [savedJobs, setSavedJobs] = useState([]);
 
   const userId = sessionStorage.getItem("userId");
   const token = sessionStorage.getItem("token");
@@ -50,6 +51,12 @@ function JobseekerDashboard() {
 
         const applications = await appsRes.json();
 
+        const savedApplications = applications.filter(
+          (app) => app.status === "saved"
+        );
+
+        setSavedJobs(savedApplications);
+
         const recRes = await fetch(
           `http://localhost:5000/api/recommendations/jobs`,
           { headers }
@@ -69,7 +76,7 @@ function JobseekerDashboard() {
         setStats({
           applications: applications.length,
           interviews: scheduledInterviews.length,
-          savedJobs: 5, // placeholder
+          savedJobs: savedApplications.length,
           profileComplete: "80%", // placeholder
         });
 
@@ -174,6 +181,27 @@ function JobseekerDashboard() {
         </div>
       </section>
 
+      <section className="mb-12">
+        <div className="flex items-center gap-2 mb-4">
+          <Bookmark className="w-5 h-5 text-yellow-600" />
+          <h2 className="text-2xl font-semibold text-gray-800">Saved Jobs</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {savedJobs.length > 0 ? (
+            savedJobs.map((job, i) => (
+              <JobCard
+                key={i}
+                title={job.title}
+                company={job.industry || "Company"}
+                onClick={() => setSelectedJob(job)}
+              />
+            ))
+          ) : (
+            <p className="text-gray-500">You have no saved jobs.</p>
+          )}
+        </div>
+      </section>
+
       <section>
         <div className="flex items-center gap-2 mb-4">
           <CalendarDays className="w-5 h-5 text-green-600" />
@@ -215,16 +243,18 @@ function JobseekerDashboard() {
             </h2>
             <p className="mb-2 text-gray-700">
               <span className="font-semibold">Reason:</span>{" "}
-              {selectedJob.reason}
+              {selectedJob.reason || "N/A"}
             </p>
             <p className="mb-2 text-gray-700">
               <span className="font-semibold">Location:</span>{" "}
               {selectedJob.location}
             </p>
             <p className="text-sm text-gray-500 mt-4">
-              Recommended on{" "}
-              {new Date(selectedJob.recommended_at).toLocaleDateString()}
+              {selectedJob.recommended_at
+                ? `Recommended on ${new Date(selectedJob.recommended_at).toLocaleDateString()}`
+                : ""}
             </p>
+
             <button
               onClick={() => {
                 setSelectedJob(null);
