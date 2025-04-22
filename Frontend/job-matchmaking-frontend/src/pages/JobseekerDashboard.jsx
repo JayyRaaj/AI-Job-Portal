@@ -135,8 +135,8 @@ function JobseekerDashboard() {
         </p>
       </div>
 
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-        <StatCard
+      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-stretch mb-12">
+      <StatCard
           icon={<Briefcase className="text-indigo-600 w-6 h-6" />}
           label="Applications"
           value={stats.applications}
@@ -151,11 +151,11 @@ function JobseekerDashboard() {
           label="Saved Jobs"
           value={stats.savedJobs}
         />
-        <StatCard
+        {/* <StatCard
           icon={<GaugeCircle className="text-purple-600 w-6 h-6" />}
           label="Profile Complete"
           value={stats.profileComplete}
-        />
+        /> */}
       </section>
 
       <section className="mb-12">
