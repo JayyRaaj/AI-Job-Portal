@@ -48,6 +48,7 @@ function ApplicationTracking() {
           >
             <option value="all">All Statuses</option>
             <option value="applied">Applied</option>
+            <option value="saved">Saved</option>
             <option value="interviewed">Interviewed</option>
             <option value="offered">Offered</option>
             <option value="rejected">Rejected</option>

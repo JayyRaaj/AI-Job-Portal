@@ -20,12 +20,22 @@ exports.getByEmployer = (req, res) => {
 exports.getByJobseeker = (req, res) => {
     const userId = req.params.id;
     const query = `
-      SELECT ir.interview_date, ir.platform, ir.meeting_link, j.title
-      FROM interviewreminders ir
-      JOIN applications a ON ir.application_id = a.id
-      JOIN jobs j ON a.job_id = j.id
-      WHERE a.user_id = 4
-      ORDER BY ir.interview_date DESC
+      SELECT 
+  ir.interview_date, 
+  ir.platform, 
+  ir.meeting_link, 
+  j.title,
+  u.name AS company_name
+FROM 
+  interviewreminders ir
+JOIN applications a ON ir.application_id = a.id
+JOIN jobs j ON a.job_id = j.id
+JOIN users u ON j.employer_id = u.id
+WHERE 
+  a.user_id = ?
+ORDER BY 
+  ir.interview_date DESC;
+
     `;
     db.query(query, [userId], (err, results) => {
       if (err) return res.status(500).json({ error: "DB error" });
