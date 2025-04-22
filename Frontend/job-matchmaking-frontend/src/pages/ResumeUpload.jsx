@@ -34,7 +34,6 @@ function ResumeUpload() {
 
     const data = await res.json();
     if (res.ok) {
-      alert("Resume uploaded");
       setInsights(data.insights);
       console.log(data.insights); //
     } else alert(data.error || "Upload failed");
@@ -119,6 +118,8 @@ function ResumeUpload() {
           Save Resume
         </button>
       </div>
+      
+
     </MainLayout>
   );
 }
