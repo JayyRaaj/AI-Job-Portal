@@ -6,9 +6,9 @@ const Application = {
     const sql = `
       INSERT INTO Applications 
         (job_id, user_id, status, applied_at, resume_id, cover_letter)
-      VALUES (?, ?, 'applied', NOW(), ?, ?)
+      VALUES (?, ?, ?, NOW(), ?, ?)
     `;
-    db.query(sql, [data.job_id, data.user_id, data.resume_id, data.cover_letter], callback);
+    db.query(sql, [data.job_id, data.user_id, data.status, data.resume_id, data.cover_letter], callback);
   },
 
   getByUser: (user_id, callback) => {

@@ -52,6 +52,7 @@ function JobRecommendations() {
         user_id: userId,
         resume_id: resumeId,
         cover_letter: coverLetter,
+        status: "applied",
       }),
     });
 
@@ -222,15 +223,50 @@ function JobRecommendations() {
                           : "No deadline"}
                       </span>
                     </div>
-                    <button
-                      className="px-5 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition text-sm"
-                      onClick={() => {
-                        setSelectedJob(job);
-                        setIsModalOpen(true);
-                      }}
-                    >
-                      Apply
-                    </button>
+                    <div className="flex gap-3">
+                      <button
+                        className={`px-5 py-2.5 rounded-xl text-sm transition ${
+                          appliedJobId === job.id
+                            ? "bg-green-500 text-white cursor-not-allowed"
+                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        }`}
+                        disabled={appliedJobId === job.id}
+                        onClick={async () => {
+                          const userId = sessionStorage.getItem("userId");
+                          const token = sessionStorage.getItem("token");
+                          await fetch(
+                            "http://localhost:5000/api/applications",
+                            {
+                              method: "POST",
+                              headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${token}`,
+                              },
+                              body: JSON.stringify({
+                                job_id: job.id,
+                                user_id: userId,
+                                resume_id: null,
+                                cover_letter: "",
+                                status: "saved",
+                              }),
+                            }
+                          );
+                          setAppliedJobId(job.id);
+                        }}
+                      >
+                        Save
+                      </button>
+
+                      <button
+                        className="px-5 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition text-sm"
+                        onClick={() => {
+                          setSelectedJob(job);
+                          setIsModalOpen(true);
+                        }}
+                      >
+                        Apply
+                      </button>
+                    </div>
                   </div>
                   {appliedJobId === job.id && (
                     <p className="text-green-600 text-sm mt-4">
