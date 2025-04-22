@@ -49,7 +49,7 @@ function InterviewReminders() {
             </div>
 
             <p className="text-sm text-gray-500 mb-2">
-              <strong>{reminder.company || "Company"}</strong> •{" "}
+              <strong>{reminder.company_name || "Company"}</strong> •{" "}
               {new Date(reminder.interview_date).toLocaleString()}
             </p>
 
