@@ -3,15 +3,13 @@ import { UserCog, Settings2, ShieldCheck, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Dialog } from "@headlessui/react";
 
-
 function Profile() {
   const userId = sessionStorage.getItem("userId");
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
-const [saveMessage, setSaveMessage] = useState("");
-
+  const [saveMessage, setSaveMessage] = useState("");
+  const [errors, setErrors] = useState({});
 
   const [profile, setProfile] = useState({
- 
     phone: "",
     address: "",
     education: "",
@@ -46,19 +44,39 @@ const [saveMessage, setSaveMessage] = useState("");
   };
 
   const saveProfile = async () => {
+    const newErrors = {};
+    const isValidPhone = /^\+?\d{10,15}$/.test(profile.phone);
+    const isValidLinkedIn =
+      profile.linkedin === "" ||
+      /^https?:\/\/(www\.)?linkedin\.com\/.+$/.test(profile.linkedin);
+    const isValidGitHub =
+      profile.github === "" ||
+      /^https?:\/\/(www\.)?github\.com\/.+$/.test(profile.github);
+
+    if (!isValidPhone) newErrors.phone = "Invalid phone number.";
+    if (!profile.education.trim())
+      newErrors.education = "Education is required.";
+    if (!profile.skills.trim()) newErrors.skills = "Skills are required.";
+    if (!isValidLinkedIn) newErrors.linkedin = "Invalid LinkedIn URL.";
+    if (!isValidGitHub) newErrors.github = "Invalid GitHub URL.";
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) return;
+
     const res = await fetch(`http://localhost:5000/api/profiles/${userId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(profile),
     });
+
     if (res.ok) {
-      setSaveMessage(" Profile saved successfully.");
+      setSaveMessage("Profile saved successfully.");
     } else {
-      setSaveMessage(" Failed to save profile.");
+      setSaveMessage("Failed to save profile.");
     }
     setIsSaveModalOpen(true);
     setTimeout(() => setIsSaveModalOpen(false), 3000);
-    
   };
 
   useEffect(() => {
@@ -83,74 +101,116 @@ const [saveMessage, setSaveMessage] = useState("");
           Basic Information
         </h2>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <input
+              type="text"
+              placeholder="Phone"
+              value={profile.phone}
+              onChange={(e) =>
+                setProfile({ ...profile, phone: e.target.value })
+              }
+              className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none w-full"
+            />
+            {errors.phone && (
+              <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
+            )}
+          </div>
 
-          
-          <input
-            type="text"
-            placeholder="Phone"
-            value={profile.phone}
-            onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-            className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Address"
-            value={profile.address}
-            onChange={(e) =>
-              setProfile({ ...profile, address: e.target.value })
-            }
-            className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Education"
-            value={profile.education}
-            onChange={(e) =>
-              setProfile({ ...profile, education: e.target.value })
-            }
-            className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Skills (comma-separated)"
-            value={profile.skills}
-            onChange={(e) => setProfile({ ...profile, skills: e.target.value })}
-            className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Certifications"
-            value={profile.certifications}
-            onChange={(e) =>
-              setProfile({ ...profile, certifications: e.target.value })
-            }
-            className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Languages"
-            value={profile.languages}
-            onChange={(e) =>
-              setProfile({ ...profile, languages: e.target.value })
-            }
-            className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-          />
-          <input
-            type="text"
-            placeholder="LinkedIn URL"
-            value={profile.linkedin}
-            onChange={(e) =>
-              setProfile({ ...profile, linkedin: e.target.value })
-            }
-            className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-          />
-          <input
-            type="text"
-            placeholder="GitHub URL"
-            value={profile.github}
-            onChange={(e) => setProfile({ ...profile, github: e.target.value })}
-            className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-          />
+          <div>
+            <input
+              type="text"
+              placeholder="Address"
+              value={profile.address}
+              onChange={(e) =>
+                setProfile({ ...profile, address: e.target.value })
+              }
+              className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none w-full"
+            />
+          </div>
+
+          <div>
+            <input
+              type="text"
+              placeholder="Education"
+              value={profile.education}
+              onChange={(e) =>
+                setProfile({ ...profile, education: e.target.value })
+              }
+              className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none w-full"
+            />
+            {errors.education && (
+              <p className="text-red-500 text-sm mt-1">{errors.education}</p>
+            )}
+          </div>
+
+          <div>
+            <input
+              type="text"
+              placeholder="Skills (comma-separated)"
+              value={profile.skills}
+              onChange={(e) =>
+                setProfile({ ...profile, skills: e.target.value })
+              }
+              className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none w-full"
+            />
+            {errors.skills && (
+              <p className="text-red-500 text-sm mt-1">{errors.skills}</p>
+            )}
+          </div>
+
+          <div>
+            <input
+              type="text"
+              placeholder="Certifications"
+              value={profile.certifications}
+              onChange={(e) =>
+                setProfile({ ...profile, certifications: e.target.value })
+              }
+              className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none w-full"
+            />
+          </div>
+
+          <div>
+            <input
+              type="text"
+              placeholder="Languages"
+              value={profile.languages}
+              onChange={(e) =>
+                setProfile({ ...profile, languages: e.target.value })
+              }
+              className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none w-full"
+            />
+          </div>
+
+          <div>
+            <input
+              type="text"
+              placeholder="LinkedIn URL"
+              value={profile.linkedin}
+              onChange={(e) =>
+                setProfile({ ...profile, linkedin: e.target.value })
+              }
+              className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none w-full"
+            />
+            {errors.linkedin && (
+              <p className="text-red-500 text-sm mt-1">{errors.linkedin}</p>
+            )}
+          </div>
+
+          <div>
+            <input
+              type="text"
+              placeholder="GitHub URL"
+              value={profile.github}
+              onChange={(e) =>
+                setProfile({ ...profile, github: e.target.value })
+              }
+              className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none w-full"
+            />
+            {errors.github && (
+              <p className="text-red-500 text-sm mt-1">{errors.github}</p>
+            )}
+          </div>
         </form>
 
         <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-lg mb-8">
@@ -164,33 +224,7 @@ const [saveMessage, setSaveMessage] = useState("");
         </div>
       </div>
 
-      
-
-    
      
-
-      <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-lg mb-10">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-          <ShieldCheck className="w-5 h-5 text-green-600" />
-          Privacy Settings
-        </h2>
-        <div className="space-y-4">
-          <label className="flex items-center gap-3 text-sm text-gray-700">
-            <input
-              type="checkbox"
-              className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-            />
-            Show my profile in search results
-          </label>
-          <label className="flex items-center gap-3 text-sm text-gray-700">
-            <input
-              type="checkbox"
-              className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-            />
-            Allow recruiters to contact me
-          </label>
-        </div>
-      </div>
 
       <div className="text-right">
         <button
@@ -202,24 +236,21 @@ const [saveMessage, setSaveMessage] = useState("");
         </button>
       </div>
       <Dialog
-  open={isSaveModalOpen}
-  onClose={() => setIsSaveModalOpen(false)}
-  className="relative z-50"
->
-  <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-  <div className="fixed inset-0 flex items-center justify-center p-4">
-    <Dialog.Panel className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl text-center">
-      <Dialog.Title className="text-lg font-semibold text-gray-800">
-        {saveMessage}
-      </Dialog.Title>
-    </Dialog.Panel>
-  </div>
-</Dialog>
-
+        open={isSaveModalOpen}
+        onClose={() => setIsSaveModalOpen(false)}
+        className="relative z-50"
+      >
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl text-center">
+            <Dialog.Title className="text-lg font-semibold text-gray-800">
+              {saveMessage}
+            </Dialog.Title>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
     </MainLayout>
-    
   );
-  
 }
 
 export default Profile;
