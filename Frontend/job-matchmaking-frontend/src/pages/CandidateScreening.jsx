@@ -20,9 +20,7 @@ function CandidateScreening() {
 
   const getDefaultPlatformInfo = () => {
     const platforms = [
-      { name: "Zoom", link: "https://zoom.us/j/default" },
-      { name: "Google Meet", link: "https://meet.google.com/default" },
-      { name: "Teams", link: "https://teams.microsoft.com/default" },
+      { name: "Google Meet", link: "   https://meet.google.com/yvd-afwj-uiy" },
     ];
     return platforms[Math.floor(Math.random() * platforms.length)];
   };
