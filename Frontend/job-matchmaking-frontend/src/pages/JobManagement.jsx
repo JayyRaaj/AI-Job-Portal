@@ -18,7 +18,7 @@ function JobManagement() {
   const [applicants, setApplicants] = useState({});
   const formRef = useRef(null);
   const [formMessage, setFormMessage] = useState("");
-
+  const [formMessageType, setFormMessageType] = useState("error");
 
   const [editingId, setEditingId] = useState(null);
 
@@ -44,7 +44,10 @@ function JobManagement() {
     const requiredFields = ["title", "location", "salary_max", "description"];
     for (let field of requiredFields) {
       if (!form[field].trim()) {
-        setFormMessage(`${field.charAt(0).toUpperCase() + field.slice(1)} is required.`);
+        setFormMessage(
+          `${field.charAt(0).toUpperCase() + field.slice(1)} is required.`
+        );
+        setFormMessageType("error"); 
         return false;
       }
     }
@@ -83,15 +86,16 @@ function JobManagement() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setJobs(await updated.json());
-    
-      setFormMessage(editingId ? "    Job updated successfully." : "     Job posted successfully.");
+      setFormMessage(
+        editingId ? "Job updated successfully." : "Job posted successfully."
+      );
+      setFormMessageType("success"); // set to success!
       setTimeout(() => setFormMessage(""), 3000);
     } else {
-      setFormMessage(" Failed to submit job.");
+      setFormMessage("Failed to submit job.");
+      setFormMessageType("error"); // set to error!
       setTimeout(() => setFormMessage(""), 3000);
     }
-    
-    
   };
 
   const handleDelete = async (id) => {
@@ -112,7 +116,6 @@ function JobManagement() {
         setJobMessages((prev) => ({ ...prev, [id]: "" }));
       }, 3000);
     }
-    
   };
 
   return (
@@ -189,9 +192,14 @@ function JobManagement() {
           </div>
         </form>
         {formMessage && (
-  <p className="text-sm text-red-600 mt-4">{formMessage}</p>
-)}
-
+          <p
+            className={`text-sm mt-4 ${
+              formMessageType === "success" ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {formMessage}
+          </p>
+        )}
       </section>
 
       <section>
@@ -239,8 +247,6 @@ function JobManagement() {
                   </button>
                 </div>
               </div>
-              
-
 
               <div className="mt-4">
                 <button
