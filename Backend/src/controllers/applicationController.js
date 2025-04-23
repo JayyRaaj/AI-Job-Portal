@@ -35,7 +35,7 @@ exports.updateApplicationStatus = (req, res) => {
 exports.getEmployerApplications = (req, res) => {
   const employerId = req.params.employerId;
   const sql = `
-    SELECT a.id, a.job_id, a.user_id, a.status, u.name AS applicant_name, j.title AS job_title
+    SELECT a.id, a.job_id, a.user_id, a.status, a.cover_letter, u.name AS applicant_name, j.title AS job_title
     FROM applications a
     JOIN users u ON a.user_id = u.id
     JOIN jobs j ON a.job_id = j.id

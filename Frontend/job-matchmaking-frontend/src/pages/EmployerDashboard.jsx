@@ -45,6 +45,9 @@ function EmployerDashboard() {
 
       const jobs = await jobsRes.json();
       const apps = await appsRes.json();
+      console.log("Fetched applications:", apps); // <--- Add this!
+      setRecentApps(apps.slice(0, 4));
+
       const reminders = await remindersRes.json();
 
       setStats({
@@ -135,7 +138,7 @@ function EmployerDashboard() {
                 minute: "2-digit",
               })}
               link={i.meeting_link}
-              />
+            />
           ))}
         </ul>
       </section>
@@ -152,9 +155,15 @@ function EmployerDashboard() {
             <p>
               <strong>Status:</strong> {selectedApp.status}
             </p>
-            <p>
-              <strong>Cover:</strong> 
-            </p>
+            <div className="mt-3">
+              <h3 className="font-semibold text-gray-900">Cover Letter</h3>
+              <div className="bg-gray-50 rounded-lg p-4 mt-1 text-gray-800 whitespace-pre-line text-sm max-h-52 overflow-auto border border-gray-100">
+  {selectedApp.cover_letter
+    ? selectedApp.cover_letter
+    : "No cover letter provided."}
+</div>
+
+            </div>
 
             <div className="mt-4 flex gap-4">
               <button
