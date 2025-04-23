@@ -14,6 +14,7 @@ function JobRecommendations() {
   const [coverLetter, setCoverLetter] = useState("");
   const [resumeFile, setResumeFile] = useState(null);
   const [appliedJobId, setAppliedJobId] = useState(null);
+  const [actionMessage, setActionMessage] = useState("");
 
   const toggleExpand = (id) => {
     setExpanded(expanded === id ? null : id);
@@ -60,6 +61,7 @@ function JobRecommendations() {
     setCoverLetter("");
     setResumeFile(null);
     setAppliedJobId(selectedJob.id);
+    setActionMessage("Application submitted successfully!");
   };
 
   const filteredJobs = jobs
@@ -181,7 +183,7 @@ function JobRecommendations() {
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <p className="text-sm font-medium text-gray-900">
-                         ${job.salary_max}
+                        ${job.salary_max}
                       </p>
                       <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
                         <Clock size={14} />
@@ -252,6 +254,7 @@ function JobRecommendations() {
                             }
                           );
                           setAppliedJobId(job.id);
+                          setActionMessage("Saved successfully!");
                         }}
                       >
                         Save
@@ -268,9 +271,9 @@ function JobRecommendations() {
                       </button>
                     </div>
                   </div>
-                  {appliedJobId === job.id && (
+                  {appliedJobId === job.id && actionMessage && (
                     <p className="text-green-600 text-sm mt-4">
-                      Application submitted successfully!
+                      {actionMessage}
                     </p>
                   )}
                 </div>
