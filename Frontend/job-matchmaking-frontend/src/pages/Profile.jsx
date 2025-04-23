@@ -10,7 +10,6 @@ function Profile() {
   const [errors, setErrors] = useState({});
   const [userName, setUserName] = useState("");
 
-
   const [profile, setProfile] = useState({
     phone: "",
     address: "",
@@ -52,10 +51,11 @@ function Profile() {
       setUserName(data.name || "");
     }
   };
-  
 
   const saveProfile = async () => {
     const newErrors = {};
+    if (!userName.trim()) newErrors.userName = "Name is required.";
+
     const isValidPhone = /^\+?\d{10,15}$/.test(profile.phone);
     const isValidLinkedIn =
       profile.linkedin === "" ||
@@ -63,38 +63,44 @@ function Profile() {
     const isValidGitHub =
       profile.github === "" ||
       /^https?:\/\/(www\.)?github\.com\/.+$/.test(profile.github);
-  
+
     if (!isValidPhone) newErrors.phone = "Invalid phone number.";
-    if (!profile.education.trim()) newErrors.education = "Education is required.";
+    if (!profile.education.trim())
+      newErrors.education = "Education is required.";
     if (!profile.skills.trim()) newErrors.skills = "Skills are required.";
     if (!isValidLinkedIn) newErrors.linkedin = "Invalid LinkedIn URL.";
     if (!isValidGitHub) newErrors.github = "Invalid GitHub URL.";
-  
+
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
-  
-    const profileRes = await fetch(`http://localhost:5000/api/profiles/${userId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(profile),
-    });
-  
-    const nameRes = await fetch(`http://localhost:5000/api/users/${userId}/name`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: userName }),
-    });
-  
+
+    const profileRes = await fetch(
+      `http://localhost:5000/api/profiles/${userId}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(profile),
+      }
+    );
+
+    const nameRes = await fetch(
+      `http://localhost:5000/api/users/${userId}/name`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: userName }),
+      }
+    );
+
     if (profileRes.ok && nameRes.ok) {
       setSaveMessage("Profile and name saved successfully.");
     } else {
       setSaveMessage("Failed to save changes.");
     }
-  
+
     setIsSaveModalOpen(true);
     setTimeout(() => setIsSaveModalOpen(false), 3000);
   };
-  
 
   useEffect(() => {
     fetchProfile();
@@ -119,15 +125,18 @@ function Profile() {
           Basic Information
         </h2>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div>
-  <input
-    type="text"
-    placeholder="Full Name"
-    value={userName}
-    onChange={(e) => setUserName(e.target.value)}
-    className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none w-full"
-  />
-</div>
+          <div className="flex flex-col">
+            <input
+              type="text"
+              placeholder="Full Name"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              className="p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none w-full"
+            />
+            {errors.userName && (
+              <p className="text-red-500 text-sm mt-1">{errors.userName}</p>
+            )}
+          </div>
 
           <div>
             <input
@@ -251,8 +260,6 @@ function Profile() {
           />
         </div>
       </div>
-
-     
 
       <div className="text-right">
         <button
