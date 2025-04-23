@@ -113,6 +113,7 @@ function CandidateScreening() {
     const token = sessionStorage.getItem("token");
 
     try {
+      // 1. Save feedback
       const res = await fetch(
         `http://localhost:5000/api/screenings/${selectedCandidate.id}/feedback`,
         {
@@ -132,11 +133,29 @@ function CandidateScreening() {
         throw new Error("Failed to save feedback");
       }
 
-      // Update the candidate in the list
+      // 2. Update status to Interviewed
+      await fetch(
+        `http://localhost:5000/api/applications/${selectedCandidate.application_id}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status: "Interviewed" }),
+        }
+      );
+
+      // 3. Update frontend state
       setCandidates(
         candidates.map((candidate) =>
           candidate.id === selectedCandidate.id
-            ? { ...candidate, remarks: notes, score: rating * 20 }
+            ? {
+                ...candidate,
+                remarks: notes,
+                score: rating * 20,
+                status: "Interviewed",
+              }
             : candidate
         )
       );
@@ -145,7 +164,7 @@ function CandidateScreening() {
       setRating(1);
       setSelectedCandidate(null);
     } catch (error) {
-      console.error("Error saving feedback:", error);
+      console.error("Error saving feedback or updating status:", error);
     }
   };
 
@@ -185,7 +204,6 @@ function CandidateScreening() {
       ) : (
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {candidates.map((candidate) => (
-              
             <div
               key={candidate.id}
               className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 p-6 rounded-3xl shadow-lg hover:shadow-2xl transition duration-300"
@@ -195,7 +213,8 @@ function CandidateScreening() {
                 <UserCircle2 className="w-10 h-10 text-indigo-500" />
                 <div>
                   <h2 className="text-xl font-semibold text-gray-800">
-                  {candidate.applicant_name || `Candidate #${candidate.application_id}`}
+                    {candidate.applicant_name ||
+                      `Candidate #${candidate.application_id}`}
                   </h2>
                   <p className="text-sm text-gray-500">
                     Test: {candidate.evaluation_criteria || "Not specified"}
@@ -265,7 +284,8 @@ function CandidateScreening() {
                   <div className="fixed inset-0 backdrop-blur-sm bg-white/10 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-xl">
                       <h2 className="text-xl font-bold mb-4">
-                      {selectedCandidate.applicant_name || selectedCandidate.application_id}
+                        {selectedCandidate.applicant_name ||
+                          selectedCandidate.application_id}
                       </h2>
                       <p>
                         <strong>Evaluation:</strong>{" "}

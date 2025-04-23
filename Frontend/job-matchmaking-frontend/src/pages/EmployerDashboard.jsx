@@ -152,6 +152,9 @@ function EmployerDashboard() {
             <p>
               <strong>Status:</strong> {selectedApp.status}
             </p>
+            <p>
+              <strong>Cover:</strong> 
+            </p>
 
             <div className="mt-4 flex gap-4">
               <button

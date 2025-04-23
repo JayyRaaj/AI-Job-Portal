@@ -181,7 +181,7 @@ function JobRecommendations() {
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <p className="text-sm font-medium text-gray-900">
-                        ${job.salary_min} - ${job.salary_max}
+                         ${job.salary_max}
                       </p>
                       <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
                         <Clock size={14} />

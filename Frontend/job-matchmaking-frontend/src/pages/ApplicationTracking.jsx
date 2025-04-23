@@ -50,8 +50,7 @@ function ApplicationTracking() {
             <option value="applied">Applied</option>
             <option value="saved">Saved</option>
             <option value="interviewed">Interviewed</option>
-            <option value="offered">Offered</option>
-            <option value="rejected">Rejected</option>
+           
           </select>
 
           <ChevronDown className="w-4 h-4 absolute right-3 top-3.5 text-gray-400 pointer-events-none" />
