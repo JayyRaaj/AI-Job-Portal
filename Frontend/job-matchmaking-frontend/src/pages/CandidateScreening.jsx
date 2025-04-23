@@ -95,6 +95,7 @@ function CandidateScreening() {
         }
 
         const data = await res.json();
+
         setCandidates(data);
       } catch (error) {
         console.error("Error fetching screenings:", error);
@@ -184,6 +185,7 @@ function CandidateScreening() {
       ) : (
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {candidates.map((candidate) => (
+              
             <div
               key={candidate.id}
               className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 p-6 rounded-3xl shadow-lg hover:shadow-2xl transition duration-300"
@@ -263,7 +265,7 @@ function CandidateScreening() {
                   <div className="fixed inset-0 backdrop-blur-sm bg-white/10 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-xl">
                       <h2 className="text-xl font-bold mb-4">
-                        Candidate #{selectedCandidate.application_id}
+                      {selectedCandidate.applicant_name || selectedCandidate.application_id}
                       </h2>
                       <p>
                         <strong>Evaluation:</strong>{" "}

@@ -219,7 +219,7 @@ function EmployerDashboard() {
               </button>
             </div>
             {localMessage && (
-              <p className="text-sm text-red-600 mt-2">{localMessage}</p>
+              <p className="text-sm text-green-600 mt-2">{localMessage}</p>
             )}
 
             {resumeError && (
