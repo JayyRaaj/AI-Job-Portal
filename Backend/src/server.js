@@ -55,6 +55,7 @@ app.use("/api/reminders", reminderRoutes);
 const chatRoute = require('./routes/chatRoutes.js');
 app.use('/api/chat', chatRoute);
 
+app.use('/api', require('./routes/userRoutes')); // 🔴 Redundant, already defined earlier
 
 const blogRoutes = require('./routes/blogRoutes');
 app.use('/api/blogs', blogRoutes);

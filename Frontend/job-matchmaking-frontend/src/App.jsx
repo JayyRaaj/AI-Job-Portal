@@ -16,6 +16,7 @@ import JobManagement from "./pages/JobManagement";
 import CandidateScreening from "./pages/CandidateScreening";
 import ForgotPassword from "./pages/ForgotPassword";
 import StatsDashboard from "./pages/AdminStats";
+import BlogPage from "./pages/BlogPage";
 
 import { Navigate } from "react-router-dom";
 
@@ -59,6 +60,7 @@ function App() {
         <Route path="/candidate-screening" element={<CandidateScreening />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/admin/stats" element={<StatsDashboard />} />
+        <Route path="/blogs" element={<BlogPage />} />
       </Routes>
     </Router>
   );
