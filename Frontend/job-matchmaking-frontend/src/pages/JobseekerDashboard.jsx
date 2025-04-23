@@ -1,6 +1,5 @@
 import MainLayout from "../layouts/MainLayout";
 import { useEffect, useState } from "react";
-
 import {
   Briefcase,
   CalendarDays,
@@ -17,19 +16,21 @@ function JobseekerDashboard() {
     savedJobs: 0,
     profileComplete: "0%",
   });
-
   const [recommendedJobs, setRecommendedJobs] = useState([]);
   const [interviews, setInterviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedJob, setSelectedJob] = useState(null);
   const [selectedInterview, setSelectedInterview] = useState(null);
-  const [applied, setApplied] = useState(false);
   const [savedJobs, setSavedJobs] = useState([]);
+  const [appliedJobIds, setAppliedJobIds] = useState([]);
+  const [saving, setSaving] = useState(false);
+  const [applying, setApplying] = useState(false);
 
   const userId = sessionStorage.getItem("userId");
   const token = sessionStorage.getItem("token");
 
+  // --- Fetch Data and Set Lists ---
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -37,25 +38,25 @@ function JobseekerDashboard() {
         setError(null);
         const headers = { Authorization: `Bearer ${token}` };
 
-        // Using the exact route from applicationRoutes.js
         const appsRes = await fetch(
           `http://localhost:5000/api/applications/user/${userId}`,
-          {
-            headers,
-          }
+          { headers }
         );
-
-        if (!appsRes.ok) {
+        if (!appsRes.ok)
           throw new Error(`Applications request failed: ${appsRes.status}`);
-        }
-
         const applications = await appsRes.json();
 
         const savedApplications = applications.filter(
           (app) => app.status === "saved"
         );
-
         setSavedJobs(savedApplications);
+
+        // Track which jobs have been applied to (for quick lookup)
+        setAppliedJobIds(
+          applications
+            .filter((app) => app.status === "applied")
+            .map((a) => a.job_id)
+        );
 
         const recRes = await fetch(
           `http://localhost:5000/api/recommendations/jobs`,
@@ -66,7 +67,6 @@ function JobseekerDashboard() {
         const recommendations = await recRes.json();
         setRecommendedJobs(recommendations);
 
-        // For interviews, filter applications with interview status
         const scheduledInterviews = applications.filter(
           (app) =>
             app.status === "interview_scheduled" ||
@@ -82,9 +82,7 @@ function JobseekerDashboard() {
 
         const reminderRes = await fetch(
           `http://localhost:5000/api/interviewreminders/user/${userId}`,
-          {
-            headers,
-          }
+          { headers }
         );
         if (!reminderRes.ok)
           throw new Error(`Interview reminders failed: ${reminderRes.status}`);
@@ -97,12 +95,106 @@ function JobseekerDashboard() {
         setIsLoading(false);
       }
     };
+    if (userId && token) fetchData();
+  }, [userId, token, saving, applying]); // refetch if saving/applying
 
-    if (userId && token) {
-      fetchData();
+  // --- Save Job Handler ---
+  const handleSave = async (job) => {
+    setSaving(true);
+    try {
+      // Check if application already exists for this job
+      const checkRes = await fetch(
+        `http://localhost:5000/api/applications/check`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            user_id: userId,
+            job_id: job.id || job.job_id,
+            status: "saved",
+          }),
+        }
+      );
+
+      const checkData = await checkRes.json();
+
+      if (checkRes.ok && checkData.exists) {
+        // Application exists, update status
+        const updateRes = await fetch(
+          `http://localhost:5000/api/applications/${checkData.id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              status: "saved",
+            }),
+          }
+        );
+
+        const updateData = await updateRes.json();
+      } else {
+        // Application doesn't exist, create new
+        const createRes = await fetch(
+          "http://localhost:5000/api/applications/",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              user_id: userId,
+              job_id: job.id || job.job_id,
+              status: "saved",
+            }),
+          }
+        );
+
+        const createData = await createRes.json();
+      }
+    } catch (error) {
+      console.error("Save error:", error);
+      alert("Something went wrong. Please try again.");
     }
-  }, [userId, token]);
+    setSaving(false);
+  };
 
+  const handleApply = async (job) => {
+    setApplying(true);
+    try {
+      const createRes = await fetch("http://localhost:5000/api/applications/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          job_id: job.id || job.job_id,
+          status: "applied",
+          // optionally resume_id, cover_letter if you use those
+        }),
+      });
+
+      const createData = await createRes.json();
+    } catch (error) {
+      console.error("Apply error:", error);
+      alert("Something went wrong. Please try again.");
+    }
+    setApplying(false);
+  };
+
+  // --- Utility to check if job is saved/applied
+  const isJobSaved = (jobId) => savedJobs.some((job) => job.job_id === jobId);
+  const isJobApplied = (jobId) => appliedJobIds.includes(jobId);
+
+  // --- UI ---
   if (isLoading) {
     return (
       <MainLayout>
@@ -112,7 +204,6 @@ function JobseekerDashboard() {
       </MainLayout>
     );
   }
-
   if (error) {
     return (
       <MainLayout>
@@ -134,9 +225,8 @@ function JobseekerDashboard() {
           Here's your job hunt overview.
         </p>
       </div>
-
       <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-stretch mb-12">
-      <StatCard
+        <StatCard
           icon={<Briefcase className="text-indigo-600 w-6 h-6" />}
           label="Applications"
           value={stats.applications}
@@ -151,13 +241,8 @@ function JobseekerDashboard() {
           label="Saved Jobs"
           value={stats.savedJobs}
         />
-        {/* <StatCard
-          icon={<GaugeCircle className="text-purple-600 w-6 h-6" />}
-          label="Profile Complete"
-          value={stats.profileComplete}
-        /> */}
       </section>
-
+      {/* Recommended Jobs */}
       <section className="mb-12">
         <div className="flex items-center gap-2 mb-4">
           <Sparkles className="w-5 h-5 text-indigo-500" />
@@ -167,20 +252,24 @@ function JobseekerDashboard() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {recommendedJobs.length > 0 ? (
-            recommendedJobs.map((job, i) => (
-              <JobCard
-                key={i}
-                title={job.title}
-                company={job.reason}
-                onClick={() => setSelectedJob(job)}
-              />
-            ))
+            recommendedJobs.map((job, i) => {
+              const jobId = job.id || job.job_id;
+              return (
+                <div key={i} className="relative">
+                  <JobCard
+                    title={job.title}
+                    company={job.reason}
+                    onClick={() => setSelectedJob(job)}
+                  />
+                </div>
+              );
+            })
           ) : (
             <p className="text-gray-500">No recommended jobs available.</p>
           )}
         </div>
       </section>
-
+      {/* Saved Jobs */}
       <section className="mb-12">
         <div className="flex items-center gap-2 mb-4">
           <Bookmark className="w-5 h-5 text-yellow-600" />
@@ -188,20 +277,39 @@ function JobseekerDashboard() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {savedJobs.length > 0 ? (
-            savedJobs.map((job, i) => (
-              <JobCard
-                key={i}
-                title={job.title}
-                company={job.industry || "Company"}
-                onClick={() => setSelectedJob(job)}
-              />
-            ))
+            savedJobs.map((job, i) => {
+              const jobId = job.job_id || job.id;
+              return (
+                <div key={i} className="relative">
+                  <JobCard
+                    title={job.title}
+                    company={job.industry || "Company"}
+                    onClick={() => setSelectedJob(job)}
+                  />
+                  <div className="flex gap-2 mt-3">
+                    {/* Only show Apply if not yet applied */}
+                    <button
+                      disabled={applying || isJobApplied(jobId)}
+                      onClick={() => handleApply(job)}
+                      className={`py-1 px-4 rounded-xl font-semibold text-white 
+                        ${
+                          isJobApplied(jobId)
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-blue-600 hover:bg-blue-700"
+                        }`}
+                    >
+                      {isJobApplied(jobId) ? "Applied" : "Apply"}
+                    </button>
+                  </div>
+                </div>
+              );
+            })
           ) : (
             <p className="text-gray-500">You have no saved jobs.</p>
           )}
         </div>
       </section>
-
+      {/* Upcoming Interviews */}
       <section>
         <div className="flex items-center gap-2 mb-4">
           <CalendarDays className="w-5 h-5 text-green-600" />
@@ -229,6 +337,8 @@ function JobseekerDashboard() {
           )}
         </ul>
       </section>
+
+      {/* Job Detail Modal (unchanged, just update button to use handleApply) */}
       {selectedJob && (
         <div className="fixed inset-0 backdrop-blur-sm bg-white/10 flex justify-center items-center z-50">
           <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-gray-200 relative">
@@ -254,22 +364,27 @@ function JobseekerDashboard() {
                 ? `Recommended on ${new Date(selectedJob.recommended_at).toLocaleDateString()}`
                 : ""}
             </p>
-
             <button
-              onClick={() => {
-                setSelectedJob(null);
-                window.open("/job-recommendations", "_blank");
-              }}
-              className={`mt-6 w-full py-2 px-4 rounded-xl font-semibold text-white ${
-                applied ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"
-              }`}
+              disabled={
+                applying || isJobApplied(selectedJob.id || selectedJob.job_id)
+              }
+              onClick={() => handleApply(selectedJob)}
+              className={`mt-6 w-full py-2 px-4 rounded-xl font-semibold text-white 
+                ${
+                  isJobApplied(selectedJob.id || selectedJob.job_id)
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }`}
             >
-              {applied ? "Apply" : "Apply"}
+              {isJobApplied(selectedJob.id || selectedJob.job_id)
+                ? "Applied"
+                : "Apply"}
             </button>
           </div>
         </div>
       )}
 
+      {/* Interview Modal */}
       {selectedInterview && (
         <div className="fixed inset-0 backdrop-blur-sm bg-white/10 flex justify-center items-center z-50">
           <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-gray-200 relative">
