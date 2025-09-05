@@ -12,9 +12,11 @@
   "dependencies": {
     "@headlessui/react": "^2.2.7",
     "@tailwindcss/vite": "^4.0.17",
+    "chart.js": "^4.5.0",
     "job-matchmaking-frontend": "file:",
     "lucide-react": "^0.542.0",
     "react": "^19.0.0",
+    "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^6.30.0"
   },
